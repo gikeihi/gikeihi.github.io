@@ -5,6 +5,8 @@ categories: AWS
 tags:
     - aws
 ---
+使用Amazon Linux，从头搭建一个NAT服务器。
+<!-- more -->
 ## 启动实例
 在EC2上安装AmazonLinux的一个实例。
 ## 配置NAT服务器
@@ -39,6 +41,7 @@ net.ipv4.ip_forward = 1
 ```
 ### 设定转发规则
 #### 规则输入
+此处设定的CIDR是指的请求方的
 ``` bash
 $ sudo iptables -t nat -A POSTROUTING -s 10.0.2.0/24 -j MASQUERADE
 ```

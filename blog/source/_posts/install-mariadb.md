@@ -6,6 +6,8 @@ tags:
     - aws
     - mariadb
 ---
+在Amazon Linux上安装MariaDB服务器，并创建用户。
+<!-- more -->
 ## 登陆服务器
 通过登陆Nat服务器，再登录到DB服务器。
 ``` bash
