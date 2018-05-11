@@ -1,5 +1,5 @@
 ---
-title: create wordpress server
+title: 创建wordpress服务
 date: 2018-05-11 21:26:58
 categories: AWS
 tags: 
