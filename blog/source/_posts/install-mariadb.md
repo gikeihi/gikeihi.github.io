@@ -1,7 +1,10 @@
 ---
 title: 安装MariaDB服务器
 date: 2018-05-10 22:38:11
-tags: aws,mariadb
+categories: AWS
+tags: 
+    - aws
+    - mariadb
 ---
 ## 登陆服务器
 通过登陆Nat服务器，再登录到DB服务器。

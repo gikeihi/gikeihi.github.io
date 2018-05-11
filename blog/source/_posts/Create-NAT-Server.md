@@ -1,7 +1,9 @@
 ---
 title: 创建NAT服务器
 date: 2018-05-10 21:31:19
-tags: aws
+categories: AWS
+tags:
+    - aws
 ---
 ## 启动实例
 在EC2上安装AmazonLinux的一个实例。
