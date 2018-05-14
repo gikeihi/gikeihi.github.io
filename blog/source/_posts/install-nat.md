@@ -20,7 +20,7 @@ sudo yum update
 ```
 ### 安装iptable services
 ``` bash
-sudo yum info iptables-services
+sudo yum install iptables-services
 ```
 ### 设定iptables的自动启动
 ``` bash
