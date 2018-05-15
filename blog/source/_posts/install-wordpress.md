@@ -82,6 +82,7 @@ $ tar -xzf latest.tar.gz
 ```
 复制配置文件
 ``` bash
+$ cd wordpress
 $ cp wp-config-sample.php wp-config.php
 $ vi wp-config.php
 ```

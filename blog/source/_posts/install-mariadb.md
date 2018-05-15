@@ -98,3 +98,7 @@ MariaDB [mysql]> show grants for 'wordpress-user';
 | GRANT ALL PRIVILEGES ON `wordpress-db`.* TO 'wordpress-user'@'%'|
 +-----------------------------------------------------------------+
 ```
+### 立刻生效
+``` sql
+MariaDB [mysql]> FLUSH PRIVILEGES;
+```
