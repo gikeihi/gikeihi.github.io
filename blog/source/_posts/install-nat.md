@@ -9,6 +9,9 @@ tags:
 <!-- more -->
 ## 启动实例
 在EC2上安装AmazonLinux的一个实例。
+## 关闭源/目标检查
+选择对象EC2，关闭源目标检查
+{% asset_img SourceDest.png 源目标检查选择菜单图片 %}
 ## 配置NAT服务器
 ### 用SSH登陆服务器
 ``` bash

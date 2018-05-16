@@ -106,4 +106,4 @@ $ find /var/www -type d -exec sudo chmod 2775 {} +
 $ find /var/www -type f -exec sudo chmod 0664 {} +
 ```
 ### 打开网站并配置wordpress
-{% asset_img Installation.png This is an example image %}
+{% asset_img Installation.png 初始安装图片 %}
