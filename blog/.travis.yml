@@ -1,0 +1,28 @@
+language: node_js
+
+node_js:
+   - "8.11.2"
+
+branches:
+  only:
+    - hexo
+
+cache:
+  directories:
+    - node_modules
+
+before_install:
+  - npm install -g hexo-cli
+
+install:
+  - npm install
+
+script:
+  - hexo clean
+  - hexo generate
+
+after_success:
+  - git config user.name "gikeihi"
+  - git config user.email "gikeihi@gmail.com"
+  - sed -i'' "s~https://github.com/gikeihi/gikeihi.github.io.git~https://${GITHUB_TOKEN}@github.com/gikeihi/gikeihi.github.io.git~" _config.yml
+  - hexo deploy
