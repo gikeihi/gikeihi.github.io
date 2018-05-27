@@ -107,3 +107,13 @@ $ find /var/www -type f -exec sudo chmod 0664 {} +
 ```
 ### 打开网站并配置wordpress
 {% asset_img Installation.png 初始安装图片 %}
+
+## 更换域名
+wordpress在初始化的生活，会把域名信息插入到一些表里，这就导致当网站更换了域名时，打不开网页的情况。
+解决的方法就是更新表，用新域名替换掉旧域名
+``` sql
+UPDATE wp_options SET option_value = replace(option_value, '旧域名','新域名') ;
+UPDATE wp_posts SET post_content = replace(post_content, '旧域名','新域名') ;
+UPDATE wp_comments SET comment_content = replace(comment_content, '旧域名', '新域名') ;
+UPDATE wp_comments SET comment_author_url = replace(comment_author_url, '旧域名', '新域名') ;
+```
