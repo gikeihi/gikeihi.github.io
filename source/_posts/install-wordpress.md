@@ -32,9 +32,9 @@ $ sudo systemctl start httpd.service
 $ sudo systemctl enable httpd.service
 Created symlink from /etc/systemd/system/multi-user.target.wants/httpd.service to /usr/lib/systemd/system/httpd.service.
 ```
-### 添加用户ec2-user到组apache
+### 添加用户ec2-user到组apache
 由于apache默认是用用户`apache`和组`apache`来运行的。
-此处是为了让用户ec2-user能够编辑属于组apache里的文件。
+此处是为了让用户ec2-user能够编辑属于组apache里的文件。
 ``` bash
 $ sudo usermod -a -G apache ec2-user
 ```
@@ -75,7 +75,7 @@ $ wget https://wordpress.org/latest.tar.gz
 ``` bash
 $ sudo yum install wget
 ```
-### 配置wordpress
+### 配置wordpress
 解压缩
 ``` bash
 $ tar -xzf latest.tar.gz
@@ -93,7 +93,7 @@ define('DB_USER', 'wordpress-user');
 define('DB_PASSWORD', 'wordpress-password');
 define('DB_HOST', '10.0.2.16');
 ```
-在以下网站获取密钥，并覆盖掉`wp-config.php`中的相应位置。
+在以下网站获取密钥，并覆盖掉`wp-config.php`中的相应位置。
 ```
 https://api.wordpress.org/secret-key/1.1/salt/ 
 ```
@@ -105,7 +105,7 @@ $ sudo chown -R root:apache /var/www
 $ find /var/www -type d -exec sudo chmod 2775 {} +
 $ find /var/www -type f -exec sudo chmod 0664 {} +
 ```
-### 打开网站并配置wordpress
+### 打开网站并配置wordpress
 {% asset_img Installation.png 初始安装图片 %}
 
 ## 更换域名

@@ -8,7 +8,7 @@ tags:
 ---
 在Amazon Linux上安装MariaDB服务器，并创建用户。
 <!-- more -->
-## 登陆服务器
+## 登陆服务器
 通过登陆Nat服务器，再登录到DB服务器。
 ``` bash
 $ ssh -i common.pem ec2-user@54.92.57.144
@@ -20,7 +20,7 @@ $ sudo yum update
 ``` sbash
 $ sudo yum install mariadb mariadb-server
 ```
-### 启动
+### 启动
 ``` bash
 $ sudo systemctl start mariadb
 ```
@@ -53,7 +53,7 @@ MariaDB [mysql]>
 MariaDB [mysql]> CREATE DATABASE `wordpress-db`;
 Query OK, 1 row affected (0.00 sec)
 ```
-### 查看DB
+### 查看DB
 ``` sql
 MariaDB [mysql]> show databases;
 +--------------------+

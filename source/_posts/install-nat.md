@@ -21,7 +21,7 @@ ssh -i common.pem ec2-user@54.92.57.144
 ``` bash
 sudo yum update
 ```
-### 安装iptable services
+### 安装iptable services
 ``` bash
 sudo yum install iptables-services
 ```
@@ -34,7 +34,7 @@ Created symlink from /etc/systemd/system/basic.target.wants/iptables.service to 
 #### 修改文件
 ``` bash
 sudo vi /etc/sysctl.conf
-输入
+输入
 net.ipv4.ip_forward = 1
 ```
 #### 设定反应
@@ -86,7 +86,7 @@ Chain POSTROUTING (policy ACCEPT)
 target     prot opt source               destination
 MASQUERADE  all  --  10.0.2.0/24          anywhere
 ```
-## 确认NAT转发
+## 确认NAT转发
 ### 上传pem文件
 #### 使用sftp登陆
 ``` bash
@@ -96,7 +96,7 @@ sftp> put ./common.pem
 Uploading ./common.pem to /home/ec2-user/common.pem
 ./common.pem
 ```
-#### 登陆DBEC
+#### 登陆DBEC
 这儿是内网IP
 ``` bash
 $ ssh -i common.pem ec2-user@10.0.2.197
