@@ -30,3 +30,47 @@ tags:
 - 可以用Github账户直接登陆
 - 有Linux环境
 - 对于开源项目免费
+
+### 注册
+直接用Github的用户登陆即可。
+
+### 取得GIthub的Personal access tokens
+在`Settings`->`Developer settings`->`Personal access tokens`里，点击`Generate new token`，创建新的`token`，权限只要打开一下即可。
+{% asset_img TokenSetting.png 权限设置图片 %}
+
+### 配置
+打开需要持续集成的Repository，在Setting页面上添加一个环境变量`GITHUB_TOKE`，我上一步取得的`token`复制进去。
+{% asset_img TravisSetting.png 集成设置图片 %}
+
+### .travis.yml
+分支的根目录下添加`.travis.yml`文件，内容如下
+``` yaml
+language: node_js
+
+node_js:
+   - "8.11.2"
+
+branches:
+  only:
+    - hexo
+
+cache:
+  directories:
+    - node_modules
+
+before_install:
+  - npm install -g hexo-cli
+
+install:
+  - npm install
+
+script:
+  - hexo generate
+
+after_success:
+  - git config user.name "gikeihi"
+  - git config user.email "gikeihi@gmail.com"
+  - sed -i'' "s~https://github.com/gikeihi/gikeihi.github.io.git~https://${GITHUB_TOKEN}@github.com/gikeihi/gikeihi.github.io.git~" _config.yml
+  - hexo deploy
+
+```
