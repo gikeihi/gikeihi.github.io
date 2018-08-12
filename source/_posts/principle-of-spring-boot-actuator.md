@@ -109,10 +109,11 @@ management.security.enabled
 - 如果这个安全设定设为`true`的话，那么在请求`Endpoint`时，会验证用户的Role，根据是否匹配来决定是否可访问。这个过程是由类`MvcEndpointSecurityInterceptor`来处理的。
 
 另外还可以根据各个`Endpoint`设定的`secure`来进一步精确控制。  
-他们之间有以下关系：
-| management.security.enabled | endpoints.xxx.enabled | 结果 |
-| --------------------------- | --------------------- | ---- |
-| true | true | 有角色权限：返回详细信息<br>无角色权限：拒绝访问 |
-| true | false | 角色无关，返回详细信息 |
-| false | true | 有角色权限：返回详细信息<br>无角色权限：返回简略信息 |
-| false | false | 角色无关，返回详细信息 |
+他们之间有以下关系：  
+
+| management.security.enabled | endpoints.xxx.enabled | 结果                                       |
+| --------------------------: | --------------------: | :---------------------------------------- |
+| true                        | true                  | 有角色权限：返回详细信息,无角色权限：拒绝访问  |
+| true                        | false                 | 角色无关，返回详细信息                        |
+| false                       | true                  | 有角色权限：返回详细信息,无角色权限：返回简略信息 |
+| false                       | false                 | 角色无关，返回详细信息                           |
