@@ -36,10 +36,12 @@ https://github.com/mapstruct/mapstruct/issues/1159
 - lombok 1.18.6
 - mapstruct 1.3.0.Final
 ### 步骤
-- 解压缩lombok-1.18.6.jar
-- 解压缩mapstruct-processor-1.3.0.Final.jar
-- 复制`lombok-1.18.6/org`目录到`mapstruct-processor-1.3.0.Final`目录
-- 复制`lombok-1.18.6/META-INF/services/org.mapstruct.ap.internal.processor.ModelElementProcessor`目录到`mapstruct-processor-1.3.0.Final/META-INF/services`目录
+- 解压缩`lombok-1.18.6.jar`
+- 解压缩`mapstruct-processor-1.3.0.Final.jar`
+- 复制`mapstruct-processor-1.3.0.Final/org`目录到`lombok-1.18.6`目录
+- 复制`mapstruct-processor-1.3.0.Final/META-INF/services/org.mapstruct.ap.internal.processor.ModelElementProcessor`目录到`lombok-1.18.6/META-INF/services`目录
 - 用文本编辑器打开`lombok-1.18.6/META-INF/services/javax.annotation.processing.Processor`,在最后追加`org.mapstruct.ap.MappingProcessor`
 - 把`lombok-1.18.6`目录里的内容打包成`lombok-1.18.6.jar`
 - 把`lombok-1.18.6.jar`放到`eclipse`目录下
+### 下载
+我已经做了一份，可以直接下载使用，{% asset_link lombok-1.18.6.jar lombok-1.18.6.jar %}
