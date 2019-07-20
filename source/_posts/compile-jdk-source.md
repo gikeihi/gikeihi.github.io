@@ -16,7 +16,7 @@ tags:
 - 解压`${JAVA_HOME}\src.zip`到目录`${workdir}\jdk8_src`，删除不需要编译的package，基本上只留下`java`,`javax`,`org`即可。
 - 在`${workdir}`目录下执行一下命令，生产编译对象列表   
 ``` bat
-dir /B /S /X jdk7_src\*.java > filelist.txt
+dir /B /S /X jdk8_src\*.java > filelist.txt
 ```
 - 复制`${JAVA_HOME}\\jre\lib\rt.jar`到目录`${workdir}\rt.jar`
 - 新建目录`${workdir}\jdk8_class`
