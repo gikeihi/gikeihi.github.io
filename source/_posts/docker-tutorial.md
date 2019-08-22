@@ -92,6 +92,21 @@ docker run --rm \
 gradle:5.5.1-jdk8 \
 gradle :somme-project:clean :somme-project:bootJar --console=plain
 ```
+
+- 创建一个maven cache的volume
+```bash
+docker volume create mvn-cache
+```
+- 执行一个project的maven
+```bash
+docker run --rm \
+-v maven-repo:/root/.m2 \
+-v "$PWD"/somme-project:/usr/src/somme-project \
+-w /usr/src/somme-project \
+maven:3.6.1-jdk-8 \
+mvn clean package
+```
+
 - 启动一个spring boot的project
 ```bash
 docker build -f ./Dockerfile.dev -t category/some-project .
