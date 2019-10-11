@@ -21,9 +21,9 @@ tags:
 - 虚拟机
   - 资源占用多
   - 冗余步骤多
-  - 启动慢
+  - 启动慢
 - 容器
-  - 启动快
+  - 启动快
   - 资源占用少
   - 体积小
 
@@ -71,7 +71,7 @@ docker run --name=some-mongo --network=some-network --restart=always -d -p 27017
 ```bash
 docker run --rm -v "$PWD/copy.sh":/copy.sh mongo bash copy.sh
 ```
-copy.sh
+- copy.sh
 ```bash
 mongodump --host 192.168.1.10 --archive=/var/dbname.gz --gzip --db dbname
 mongorestore --host 192.168.1.15 --drop --archive=/var/dbname.gz --gzip
@@ -113,7 +113,7 @@ docker build -f ./Dockerfile.dev -t category/some-project .
 docker stop some-project || true
 docker run -p 8082:8082 --rm --name some-project --network saas-nw -d saas/some-project
 ```
-`Dockerfile.dev`
+- `Dockerfile.dev`
 ```
 FROM openjdk:8-jdk-alpine
 VOLUME /tmp
