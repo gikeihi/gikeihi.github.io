@@ -97,3 +97,7 @@ INSTALLED_APPS = (
     'django_extensions',
 )
 ```
+- 用例
+```sh
+$ python .\manage.py show_urls
+```
