@@ -11,8 +11,13 @@ tags:
 # 安装必要的软件
 ## windows 10
 ## git
-## 安装python，现阶段（openpose 1.5）还未支持python3.8，所以下载3.7的最新版本
+## 安装python，并把python放到系统的path里。  
+现阶段（openpose 1.5）还未支持python3.8，所以下载3.7的最新版本  
 https://www.python.org/ftp/python/3.7.5/python-3.7.5-amd64.exe
+- 安装所需的模块
+```
+pip install opencv-python
+```
 ## 安装cuda，这里以9.2版本为例
 https://developer.nvidia.com/cuda-92-download-archive?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exelocal
 ## 安装cudnn
