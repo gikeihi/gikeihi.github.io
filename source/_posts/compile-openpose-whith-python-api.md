@@ -22,10 +22,13 @@ pip install opencv-python
 ### 确认本机显卡驱动版本
 - 从控制面板打开NVIDIA面板
 - 点击【帮助】菜单的【系统信息】便可以查看显卡驱动版本，我的版本是`422.02`
+
 ### 打开以下网站，确认适合的CUDA版本
 https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html
+
 ### 本次以9.2版本为例安装
 https://developer.nvidia.com/cuda-92-download-archive?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exelocal
+
 ## 安装cudnn
 - 下载cuda所对应版本的cudnn，这个需要注册才能下载
 - 安装非常简单，只要把文件放置到cuda的相应目下即可
