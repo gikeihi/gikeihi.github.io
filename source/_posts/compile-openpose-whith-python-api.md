@@ -21,7 +21,7 @@ pip install opencv-python
 ## 安装cuda
 ### 确认本机显卡驱动版本
 - 从控制面板打开NVIDIA面板
-- 点击【帮助】菜单的【系统信息】便可以查看显卡驱动版本，我的版本是`422.02`
+- 点击【帮助】菜单的【系统信息】便可以查看显卡驱动版本，我的版本是`422.02`  
 
 ### 打开以下网站，确认适合的CUDA版本
 https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html
