@@ -14,13 +14,13 @@ tags:
 ## 安装python，并把python放到系统的path里。  
 现阶段（openpose 1.5）还未支持python3.8，所以下载3.7的最新版本  
 https://www.python.org/ftp/python/3.7.5/python-3.7.5-amd64.exe
-- 安装所需的模块
+- 安装所需的模块  
 ```
 pip install opencv-python
 ```
 ## 安装cuda
 ### 确认本机显卡驱动版本
-- 从控制面板打开NVIDIA面板
+- 从控制面板打开NVIDIA面板  
 - 点击【帮助】菜单的【系统信息】便可以查看显卡驱动版本，我的版本是`422.02`  
 
 ### 打开以下网站，确认适合的CUDA版本
@@ -30,9 +30,9 @@ https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html
 https://developer.nvidia.com/cuda-92-download-archive?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exelocal
 
 ## 安装cudnn
-- 下载cuda所对应版本的cudnn，这个需要注册才能下载
-- 安装非常简单，只要把文件放置到cuda的相应目下即可
-- 为了让cudann支持最新的visual studio 2017版本，修改以下cudann的头文件
+- 下载cuda所对应版本的cudnn，这个需要注册才能下载  
+- 安装非常简单，只要把文件放置到cuda的相应目下即可  
+- 为了让cudann支持最新的visual studio 2017版本，修改以下cudann的头文件  
 ```
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.2\include\crt\host_config.h
 ```
@@ -41,7 +41,7 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.2\include\crt\host_config.
 #if _MSC_VER < 1600 || _MSC_VER > 1920
 ```
 ## 安装visual studio community 2017
-- 安装c++编译器即可
+- 安装c++编译器即可  
 ## 安装cmake,这里以版本3.6.0为例。
 https://github.com/Kitware/CMake/releases/download/v3.16.0/cmake-3.16.0-win64-x64.msi
 # 编译openpose
@@ -50,22 +50,22 @@ https://github.com/Kitware/CMake/releases/download/v3.16.0/cmake-3.16.0-win64-x6
 git clone --recursive https://github.com/CMU-Perceptual-Computing-Lab/openpose.git
 ```
 ## 打开cmake配置编译项
-- `[where is the source code]`指定openpose的目录
-- `[where to build the binaries]`指定编译目录，一般指定为openpose目录下的`build`目录
-- 点击`Configure`按钮，便会下载所需文件，以及配置编译参数
-- 选项中选择`BUILD_PYTHON`，然后点击`Generate`按钮，生成visual studio 2017的工程
-- 点击`Open Project`按钮，打开visual studio 2017，并打开openpose工程
+- `[where is the source code]`指定openpose的目录  
+- `[where to build the binaries]`指定编译目录，一般指定为openpose目录下的`build`目录  
+- 点击`Configure`按钮，便会下载所需文件，以及配置编译参数  
+- 选项中选择`BUILD_PYTHON`，然后点击`Generate`按钮，生成visual studio 2017的工程  
+- 点击`Open Project`按钮，打开visual studio 2017，并打开openpose工程  
 ## build
-- 在visual studio 2017中，选择编译为release，右键点击solution OpenPose，选择build solution。
+- 在visual studio 2017中，选择编译为release，右键点击solution OpenPose，选择build solution。  
 
 # 用python开发程序时，用到的文件
 ## openpose所需dll文件
-- openpose\build\bin下的所有文件
-- openpose\build\x64\Release下的openpose.dll文件
+- openpose\build\bin下的所有文件  
+- openpose\build\x64\Release下的openpose.dll文件  
 ## python的包文件
-- openpose\build\python\openpose\Release下的pyopenpose.cp37-win_amd64.pyd文件
+- openpose\build\python\openpose\Release下的pyopenpose.cp37-win_amd64.pyd文件  
 ## openpose的模块文件
-- openpose\models
+- openpose\models  
 
 # python示例
 ```python
