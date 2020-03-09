@@ -7,18 +7,38 @@ tags:
     - date
     - datetime
 ---
-Java 8另一个新增的重要特性就是引入了新的时间和日期API，它们被包含在java.time包中。借助新的时间和日期API可以以更简洁的方法处理时间和日期。
+Java 8另一个新增的重要特性就是引入了新的时间和日期API，它们被包含在`java.time`包中。借助新的时间和日期API可以以更简洁的方法处理时间和日期。
 <!-- more -->
 在介绍本篇文章内容之前，我们先来讨论Java 8为什么要引入新的日期API，与之前的时间和日期处理方式有什么不同？  
 
 在Java 8之前，所有关于时间和日期的API都存在各种使用方面的缺陷，主要有：  
-- Java的java.util.Date和java.util.Calendar类易用性差，不支持时区，而且他们都不是线程安全的；
-- 用于格式化日期的类DateFormat被放在java.text包中，它是一个抽象类，所以我们需要实例化一个SimpleDateFormat对象来处理日期格式化，并且DateFormat也是非线程安全，这意味着如果你在多线程程序中调用同一个DateFormat对象，会得到意想不到的结果。
-- 对日期的计算方式繁琐，而且容易出错，因为月份是从0开始的，从Calendar中获取的月份需要加一才能表示当前月份。  
+- Java的`java.util.Date`和`java.util.Calendar`类易用性差，不支持时区，而且他们都不是线程安全的；
+- 用于格式化日期的类`DateFormat`被放在`java.text`包中，它是一个抽象类，所以我们需要实例化一个`SimpleDateFormat`对象来处理日期格式化，并且`DateFormat`也是非线程安全，这意味着如果你在多线程程序中调用同一个`DateFormat`对象，会得到意想不到的结果。
+- 对日期的计算方式繁琐，而且容易出错，因为月份是从0开始的，从`Calendar`中获取的月份需要加一才能表示当前月份。  
 
 由于以上这些问题，出现了一些三方的日期处理框架，例如Joda-Time，date4j等开源项目。但是，Java需要一套标准的用于处理时间和日期的框架，于是Java 8中引入了新的日期API。新的日期API是JSR-310规范的实现，Joda-Time框架的作者正是JSR-310的规范的倡导者，所以能从Java 8的日期API中看到很多Joda-Time的特性。
+# JVM设置时区的方法
+## 设置系统的时区
+一般类Linux类都是使用环境变量`TZ`设置时区
+```bash
+export TZ="Asia/Tokyo"
+```
+## 设置java参数
+```bash
+java -Duser.timezone="Asia/Tokyo" com.company.Main
+```
+## 直接在程序中设置
+```java
+TimeZone.setDefault(TimeZone.getTimeZone("Asia/Tokyo"));
+```
+## 全球化
+如果你是在做一个全球化的系统，那么最好不要用上面的全局设置，而是在每一次操作时间的时候，都根据时区进行转换。  
+数据库统一使用`UTC`时区。
+- 比如处理一个东京用户输入的时间，把时间从`Asia/Tokyo`转换为`UTC`时区进行存储。
+- 数据库的时间要向纽约用户呈现时，把时间从`UTC`时区转为`America/New_York`
+
 # Java 8日期/时间类
-Java 8的日期和时间类包含LocalDate、LocalTime、Instant、Duration以及Period，这些类都包含在java.time包中，下面我们看看这些类的用法。  
+Java 8的日期和时间类包含`LocalDate`、`LocalTime`、`Instant`、`Duration`以及`Period`，这些类都包含在`java.time`包中，下面我们看看这些类的用法。  
 先看一个各个类之间的关系图：
 {% asset_img guanxi.jpg 关系图 %}
 ## LocalDate
@@ -51,6 +71,36 @@ LocalDate date = ldt1.toLocalDate();
 LocalTime time = ldt1.toLocalTime();
 ```
 
+## ZonedDateTime
+结合了`LocalDateTime`与类`zoneid`类。它用于表示具有时区（地区/城市，如欧洲/巴黎）的完整日期（年，月，日）和时间（小时，分钟，秒，纳秒）。
+```java
+DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY-MM-dd  HH:mm:ss");
+LocalDateTime leaving = LocalDateTime.of(2013, Month.JULY, 20, 19, 30);
+ZoneId leavingZone = ZoneId.of("America/Los_Angeles");
+ZonedDateTime departure = ZonedDateTime.of(leaving, leavingZone);
+System.out.printf("LEAVING:  %s", departure.format(format));
+
+ZoneId arrivingZone = ZoneId.of("Asia/Tokyo");
+ZonedDateTime arrival = departure.withZoneSameInstant(arrivingZone) // 转换为东京时区
+                .plusMinutes(650);
+System.out.printf("ARRIVING: %s", arrival.format(format));
+```
+
+## OffsetDateTime
+实际上，结合了`LocalDateTime`与`ZoneOffset`类。它用于表示格林威治/ UTC 时间的偏移量 （+/-小时：分钟，例如 +06：00 或-08:00）的整个日期（年，月，日）和时间（小时，分钟，秒，纳秒）
+```java
+DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY-MM-dd  HH:mm:ss");
+LocalDateTime tokyoLocalDate = LocalDateTime.of(2013, Month.JULY, 20, 19, 30);
+ZoneOffset tokyoOffset = ZoneOffset.of("+09:00");
+OffsetDateTime tokyoOffsetDate = OffsetDateTime.of(tokyoLocalDate, tokyoOffset);
+System.out.printf("Tokyo Date Time:  %s\n", tokyoOffsetDate.format(format));
+
+ZoneOffset beijingOffset = ZoneOffset.of("+08:00");
+OffsetDateTime beijingOffsetDate = tokyoOffsetDate.withOffsetSameInstant(beijingOffset); //转换为北京时区
+System.out.printf("Beijing Date Time:  %s\n", beijingOffsetDate.format(format));
+```
+`OffsetDateTime`和`ZonedDateTime`之间的差异在于后者包括涵盖夏令时调整的规则。
+
 ## Instant
 `Instant`用于表示一个时间戳，它与我们常使用的`System.currentTimeMillis()`有些类似，不过`Instant`可以精确到纳秒（Nano-Second），`System.currentTimeMillis()`方法只精确到毫秒（Milli-Second）。如果查看`Instant`源码，发现它的内部使用了两个常量，`seconds`表示从`1970-01-01 00:00:00`开始到现在的秒数，`nanos`表示纳秒部分（`nanos`的值不会超过`999,999,999`）。`Instant`除了使用`now()`方法创建外，还可以通过`ofEpochSecond`方法创建：
 ```java
@@ -60,7 +110,7 @@ Instant instant = Instant.ofEpochSecond(120, 100000);
 ```bash
 1970-01-01T00:02:00.000100Z
 ```
-Instant和LocalDateTime可以互相转换，因为LocalDateTime本身是没有时区的，所以转换时要指定时区。
+`Instant`和`LocalDateTime`可以互相转换，因为`LocalDateTime`本身是没有时区的，所以转换时要指定时区。
 ```java
 Instant instant = Instant.now();
 LocalDateTime tokyoDateTime = LocalDateTime.ofInstant(instant, ZoneId.of("Asia/Tokyo"));
@@ -68,7 +118,7 @@ instant = tokyoDateTime.toInstant(ZoneOffset.of("+09:00"));
 ```
 
 ## Duration
-Duration的内部实现与Instant类似，也是包含两部分：seconds表示秒，nanos表示纳秒。两者的区别是Instant用于表示一个时间戳（或者说是一个时间点），而Duration表示一个时间段，所以Duration类中不包含now()静态方法。可以通过Duration.between()方法创建Duration对象：
+`Duration`的内部实现与`Instant`类似，也是包含两部分：`seconds`表示秒，`nanos`表示纳秒。两者的区别是`Instant`用于表示一个时间戳（或者说是一个时间点），而`Duration`表示一个时间段，所以`Duration`类中不包含`now()`静态方法。可以通过`Duration.between()`方法创建`Duration`对象：
 ```java
 LocalDateTime from = LocalDateTime.of(2017, Month.JANUARY, 5, 10, 7, 0);    // 2017-01-05 10:07:00
 LocalDateTime to = LocalDateTime.of(2017, Month.FEBRUARY, 5, 10, 7, 0);     // 2017-02-05 10:07:00
@@ -81,7 +131,7 @@ long seconds = duration.getSeconds();       // 这段时间的秒数
 long milliSeconds = duration.toMillis();    // 这段时间的毫秒数
 long nanoSeconds = duration.toNanos();      // 这段时间的纳秒数
 ```
-Duration对象还可以通过of()方法创建，该方法接受一个时间段长度，和一个时间单位作为参数：
+`Duration`对象还可以通过of()方法创建，该方法接受一个时间段长度，和一个时间单位作为参数：
 ```java
 Duration duration1 = Duration.of(5, ChronoUnit.DAYS);       // 5天
 Duration duration2 = Duration.of(1000, ChronoUnit.MILLIS);  // 1000毫秒
