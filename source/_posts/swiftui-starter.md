@@ -93,7 +93,7 @@ public protocol View {
 ## 好像又不对了
 body里肯定不止一个组件，再添加一个如何？
 ```swift
-    var body: Text {
+    var body: some View {
         Text("Hello, WQF!")
         Text("Hello, WQF!")
     }
@@ -117,8 +117,17 @@ extension ViewBuilder {
 ```
 没完了，又冒出个`@_functionBuilder`，不过根据表现来看，也就是说被`@_functionBuilder`修饰过的结构体，再去修饰变量时，会先把返回的值进行一次builder，对于上面的ViewBuilder来说，如果返回的是一个组件那么就直接返回这个组件，如果是两个或以上的组件，那么会合成一个TupleView，那么对于上面的一个等效代码，类似于以下，还是一行代码，（等效代码不可编译）
 ```swift
-    var body: Text {
-        TupleView<(Text("Hello, WQF!"), Text("Hello, WQF!"))>
+    var body: some View {
+        viewBuilder -> Content in
+        let text1 = Text("Hello, WQF!")
+        let text2 = Text("Hello, WQF!")
+        return viewBuilder.buildBlock(text1, text2)
+    }
+```
+最终等效为
+```swift
+    var body: some View {
+        (Text("Hello, WQF!"), Text("Hello, WQF!"))
     }
 ```
 另外，我们也发现，View里只能包含十个子View，再多的话，只能分组包装起来了。比如`Group`
