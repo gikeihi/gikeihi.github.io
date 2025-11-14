@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.2.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.2.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="spring中的验证">
+<meta name="keywords" content="spring boot,validation">
+<meta property="og:type" content="article">
+<meta property="og:title" content="spring validation">
+<meta property="og:url" content="http://yoursite.com/2021/05/23/spring-validation/index.html">
+<meta property="og:site_name" content="小屋">
+<meta property="og:description" content="spring中的验证">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2025-11-14T03:26:00.435Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="spring validation">
+<meta name="twitter:description" content="spring中的验证">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/05/23/spring-validation/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>spring validation | 小屋</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小屋</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">小憩之处</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/23/spring-validation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Keihi Gi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小屋">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">spring validation
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2021-05-23 21:26:04" itemprop="dateCreated datePublished" datetime="2021-05-23T21:26:04+08:00">2021-05-23</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2025-11-14 11:26:00" itemprop="dateModified" datetime="2025-11-14T11:26:00+08:00">2025-11-14</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>spring中的验证<br><a id="more"></a></p>
+<h1 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h1><p>关于spring验证的一些笔记</p>
+<h1 id="内置验证规则"><a href="#内置验证规则" class="headerlink" title="内置验证规则"></a>内置验证规则</h1><ul>
+<li><p>JSR提供的校验注解： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">@Null   被注释的元素必须为 null    </span><br><span class="line">@NotNull    被注释的元素必须不为 null    </span><br><span class="line">@AssertTrue     被注释的元素必须为 true    </span><br><span class="line">@AssertFalse    被注释的元素必须为 false    </span><br><span class="line">@Min(value)     被注释的元素必须是一个数字，其值必须大于等于指定的最小值    </span><br><span class="line">@Max(value)     被注释的元素必须是一个数字，其值必须小于等于指定的最大值    </span><br><span class="line">@DecimalMin(value)  被注释的元素必须是一个数字，其值必须大于等于指定的最小值    </span><br><span class="line">@DecimalMax(value)  被注释的元素必须是一个数字，其值必须小于等于指定的最大值    </span><br><span class="line">@Size(max=, min=)   被注释的元素的大小必须在指定的范围内    </span><br><span class="line">@Digits (integer, fraction)     被注释的元素必须是一个数字，其值必须在可接受的范围内    </span><br><span class="line">@Past   被注释的元素必须是一个过去的日期    </span><br><span class="line">@Future     被注释的元素必须是一个将来的日期    </span><br><span class="line">@Pattern(regex=,flag=)  被注释的元素必须符合指定的正则表达式</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Hibernate Validator提供的校验注解：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@NotBlank(message =)   验证字符串非null，且长度必须大于0    </span><br><span class="line">@Email  被注释的元素必须是电子邮箱地址    </span><br><span class="line">@Length(min=,max=)  被注释的字符串的大小必须在指定的范围内    </span><br><span class="line">@NotEmpty   被注释的字符串的必须非空    </span><br><span class="line">@Range(min=,max=,message=)  被注释的元素必须在合适的范围内</span><br><span class="line">————————————————</span><br><span class="line">版权声明：本文为CSDN博主「下一秒升华」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。</span><br><span class="line">原文链接：https://blog.csdn.net/u013815546/article/details/77248003</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>实际上这些都是对于把输入绑定为String类型的时候才有效，如果直接绑定为相应的类型，比如<code>@Digits</code>，如果输入的是个字符，那么直接就会发生类型转换错误，根本走不到<code>@Digits</code>的验证。<br>当然这样设计也比较好理解，因为本来就是为了form设计的，form提交过来的本来都是不具有类型信息的纯字符串。<br>所以，要想真正有效利用上面的所有校验，那么就必须都绑定为String。<br>但是如果是json，那么就显得很别扭了，因为json本身就带有一定的数据类型，比如字符串，数字，日期，布尔，如果跟绑定的数据类型不一致的话，从json到java bean反序列化时便会出错。<br>不过如果使用json的话，一般都是前后端分离了，所以涉及到由用户输入的数据时，前端就直接进行了数据验证了，一般不会走到后端，如果有人故意通过修改提交数据来改变相应的数据类型的话，那么直接抛出系统错误即可。  </p>
+<h1 id="验证顺序"><a href="#验证顺序" class="headerlink" title="验证顺序"></a>验证顺序</h1><p>验证的话，一定要有验证顺序，不能一次性把所有项都验证完，比如如果有个项目有两个验证</p>
+<ol>
+<li>必须项</li>
+<li>在数据库的存在<br>那么如果验证1没有通过的话，2肯定就不需要再验证了。<br>Spring可以通过使用<code>@GroupSequence</code>注解来对验证组进行排序</li>
+</ol>
+<ul>
+<li>SingleCheck.java<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">SingleCheck</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>SingleCheck主要是项目自身不依赖于其它项的校验，比如必须项，长度，大小，格式等，一般直接注解在field上</p>
+<ul>
+<li>CorrelatedCheck.java<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">CorrelatedCheck</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>CorrelatedCheck是相关校验，主要是提交的项目里，有相关性的校验，最典型的是密码和确认密码一定要一致，另外还有的比如项目为某个特定值时，另外一个项目才为必须等。因为涉及到项目之间的关联，所以一般把这类校验直接注解到类上</p>
+<ul>
+<li>BusinessCheck.java<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BusinessCheck</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>BusinessCheck涉及到业务校验，这类校验除了提交数据本身，还要依赖于系统中的一些值，比如数据库存在性校验等</p>
+<ul>
+<li>CheckSequence.java<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GroupSequence</span>(&#123;SingleCheck.class, CorrelatedCheck.class, BusinessCheck.class&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">CheckSequence</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>设定校验顺序CheckSequence，这样只有当前一个校验都通过时才会进行下一项校验。</p>
+<ul>
+<li><p>绑定提交数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@Confirm</span>(field = <span class="string">"password"</span>, confirmField = <span class="string">"verifyPassword"</span>,</span><br><span class="line">        message = <span class="string">"密码必须一致"</span>, groups = &#123;CorrelatedCheck.class&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">createUser</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span>(groups = SingleCheck.class, message = <span class="string">"用户名是必须项"</span>)</span><br><span class="line">    <span class="meta">@NotExistsUser</span>(groups = BusinessCheck.class, message = <span class="string">"用户名已存在"</span>)</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span>(groups = SingleCheck.class, message = <span class="string">"密码是必须项"</span>)</span><br><span class="line">    <span class="keyword">private</span> String password;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span>(groups = SingleCheck.class, message = <span class="string">"确认密码是必须项"</span>)</span><br><span class="line">    <span class="keyword">private</span> String verifyPassword;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span>(message = <span class="string">"个人简介必须"</span>)</span><br><span class="line">    <span class="keyword">private</span> String bio;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span>(groups = SingleCheck.class, message = <span class="string">"用户ID是必须项"</span>)</span><br><span class="line">    <span class="meta">@ExistsDept</span>(groups = BusinessCheck.class, message = <span class="string">"组织不存在"</span>)</span><br><span class="line">    <span class="keyword">private</span> Long departId;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>路由</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PostMapping</span>(<span class="string">"/user"</span>)</span><br><span class="line"><span class="keyword">public</span> ResponseEntity&lt;?&gt; create(<span class="meta">@Validated</span>(&#123;CheckSequence.class&#125;) <span class="meta">@RequestBody</span> createUser body, BindingResult result) &#123;</span><br><span class="line">    <span class="keyword">if</span> (result.hasErrors()) &#123;</span><br><span class="line">        <span class="keyword">return</span> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList()));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ResponseEntity.ok(body);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>注意上面的<code>BindingResult result</code>，一定要紧跟在被校验的bean的后面，否则接收不到校验结果。<br>另外，如果方面里没有这个参数，那么会抛出<code>MethodArgumentNotValidException</code>异常<br>那么啥时候用这个参数，啥时候不用了呢？<br>主要还是要看是否需要对返回的错误消息进行个别的调整，如果不需要的话，可以在<code>ControllerAdvice</code>里对错误结果进行统一处理，需要的时候再添加上这个参数，进行个别处理。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ControllerAdvice</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GlobalExceptionHandler</span> <span class="keyword">extends</span> <span class="title">ResponseEntityExceptionHandler</span> </span>&#123;</span><br><span class="line">    <span class="meta">@ExceptionHandler</span>(value = &#123;ConstraintViolationException.class&#125;)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ResponseEntity&lt;String&gt; <span class="title">handle</span><span class="params">(ConstraintViolationException e)</span> </span>&#123;</span><br><span class="line">        Set&lt;ConstraintViolation&lt;?&gt;&gt; violations = e.getConstraintViolations();</span><br><span class="line">        StringBuilder strBuilder = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">        <span class="keyword">for</span> (ConstraintViolation&lt;?&gt; violation : violations) &#123;</span><br><span class="line">            strBuilder.append(violation.getInvalidValue() + <span class="string">" "</span> + violation.getMessage() + <span class="string">"\n"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        String result = strBuilder.toString();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ResponseEntity&lt;String&gt;(<span class="string">"ConstraintViolation:"</span> + result, HttpStatus.BAD_REQUEST);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> ResponseEntity&lt;Object&gt; <span class="title">handleBindException</span><span class="params">(BindException ex, HttpHeaders headers, HttpStatus status,</span></span></span><br><span class="line"><span class="function"><span class="params">                                                         WebRequest request)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ResponseEntity&lt;Object&gt;(buildMessages(ex.getBindingResult()),</span><br><span class="line">                HttpStatus.BAD_REQUEST);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> ResponseEntity&lt;Object&gt; <span class="title">handleMethodArgumentNotValid</span><span class="params">(MethodArgumentNotValidException ex,</span></span></span><br><span class="line"><span class="function"><span class="params">                                                                  HttpHeaders headers, HttpStatus status, WebRequest request)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ResponseEntity&lt;Object&gt;(buildMessages(ex.getBindingResult()),</span><br><span class="line">                HttpStatus.BAD_REQUEST);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ResponseEntity&lt;Object&gt; <span class="title">handleMissingServletRequestParameter</span><span class="params">(MissingServletRequestParameterException ex,</span></span></span><br><span class="line"><span class="function"><span class="params">                                                                       HttpHeaders headers, HttpStatus status, WebRequest request)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ResponseEntity&lt;Object&gt;(<span class="string">"ParamMissing:"</span> + ex.getMessage(), HttpStatus.BAD_REQUEST);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> ResponseEntity&lt;Object&gt; <span class="title">handleTypeMismatch</span><span class="params">(TypeMismatchException ex, HttpHeaders headers,</span></span></span><br><span class="line"><span class="function"><span class="params">                                                        HttpStatus status, WebRequest request)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ResponseEntity&lt;Object&gt;(<span class="string">"TypeMissMatch:"</span> + ex.getMessage(), HttpStatus.BAD_REQUEST);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> ResponseEntity&lt;Object&gt; <span class="title">handleHttpMessageNotReadable</span><span class="params">(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ResponseEntity&lt;Object&gt;(<span class="string">"HttpMessageNotReadable:"</span> + ex.getMessage(), HttpStatus.BAD_REQUEST);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> List&lt;String&gt; <span class="title">buildMessages</span><span class="params">(BindingResult result)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> result.getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="自作validator"><a href="#自作validator" class="headerlink" title="自作validator"></a>自作validator</h1><p>一般自作的validator分为2种类型</p>
+<ol>
+<li><p>注解型<br>就像上面例子里所提到的<code>Confirm</code>,<code>ExistsDept</code>等，这类validator，需要先有个注解，然后再定义一个继承自<code>ConstraintValidator</code>的类</p>
+<ul>
+<li><p>Confirm</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(&#123;ElementType.TYPE, ElementType.ANNOTATION_TYPE&#125;)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Constraint</span>(validatedBy = &#123;ConfirmValidator.class&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Confirm &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function">String <span class="title">message</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</span><br><span class="line"></span><br><span class="line">    Class&lt;?&gt;[] groups() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">    Class&lt;? extends Payload&gt;[] payload() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="function">String <span class="title">field</span><span class="params">()</span> <span class="keyword">default</span> "field"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">String <span class="title">confirmField</span><span class="params">()</span> <span class="keyword">default</span> "confirmField"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Target</span>(&#123;ElementType.TYPE, ElementType.ANNOTATION_TYPE&#125;)</span><br><span class="line">    <span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="meta">@interface</span> List &#123;</span><br><span class="line">        Confirm[] value();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>ConfirmValidator</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConfirmValidator</span> <span class="keyword">implements</span> <span class="title">ConstraintValidator</span>&lt;<span class="title">Confirm</span>, <span class="title">Object</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String field;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String confirmField;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String message;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initialize</span><span class="params">(Confirm annotation)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.field = annotation.field();</span><br><span class="line">        <span class="keyword">this</span>.confirmField = annotation.confirmField();</span><br><span class="line">        <span class="keyword">this</span>.message = annotation.message();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isValid</span><span class="params">(Object value, ConstraintValidatorContext context)</span> </span>&#123;</span><br><span class="line">        BeanWrapper beanWrapper = <span class="keyword">new</span> BeanWrapperImpl(value);</span><br><span class="line">        String text = (String) beanWrapper.getPropertyValue(field);</span><br><span class="line">        String confirmText = (String) beanWrapper.getPropertyValue(confirmField);</span><br><span class="line">        <span class="keyword">if</span> (text == <span class="keyword">null</span> &amp;&amp; confirmText == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (text != <span class="keyword">null</span> &amp;&amp; text.equals(confirmText)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            context.disableDefaultConstraintViolation();</span><br><span class="line">            context.buildConstraintViolationWithTemplate(message).addPropertyNode(confirmField)</span><br><span class="line">                    .addConstraintViolation();</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>还有一种，就是验证需要传入额外的参数，这种validator需要继承<code>SmartValidator</code><br>SessionExistValidator</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SessionExistValidator</span> <span class="keyword">implements</span> <span class="title">SmartValidator</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> SessionsRepository repository;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">validate</span><span class="params">(Object target, Errors errors, Object... validationHints)</span> </span>&#123;</span><br><span class="line">        Long sessionId = (Long) target;</span><br><span class="line">        String companyId = (Long) validationHints[<span class="number">0</span>];</span><br><span class="line">        Boolean exist = repository.existEvent(companyId, sessionId);</span><br><span class="line">        <span class="keyword">if</span> (!exist) &#123;</span><br><span class="line">            errors.reject(<span class="string">""</span>, String.format(<span class="string">"Session ID&#123;%d&#125; is not existed."</span>, sessionId));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">supports</span><span class="params">(Class&lt;?&gt; clazz)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Long.class.isAssignableFrom(clazz);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">validate</span><span class="params">(Object target, Errors errors)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.validate(target, errors, <span class="keyword">new</span> Object[]&#123;&#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>验证<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ValidationUtils.invokeValidator(sessionExistValidator, sessionId, bindingResult, companyId);</span><br><span class="line"><span class="keyword">if</span> (bindingResult.hasErrors()) &#123;</span><br><span class="line">    List&lt;String&gt; errors = bindingResult.getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage</span><br><span class="line">    ).collect(Collectors.toList());</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> BusinessException(errors);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>由于companyId并不是前端的提交项，需要通过其它途径才能拿到，另外再验证sessionId时，必须用到companyId，所以这个时候就需要用到手动验证。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/spring-boot/" rel="tag"># spring boot</a>
+          
+            <a href="/tags/validation/" rel="tag"># validation</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/09/install-frp-in-docker/" rel="next" title="install frp in docker">
+                <i class="fa fa-chevron-left"></i> install frp in docker
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/11/28/install-k8s/" rel="prev" title="install k8s">
+                install k8s <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Keihi Gi</p>
+              <p class="site-description motion-element" itemprop="description">没事进来做做，喝杯茶，聊聊天。</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">44</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">21</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">63</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概要"><span class="nav-number">1.</span> <span class="nav-text">概要</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内置验证规则"><span class="nav-number">2.</span> <span class="nav-text">内置验证规则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#验证顺序"><span class="nav-number">3.</span> <span class="nav-text">验证顺序</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#自作validator"><span class="nav-number">4.</span> <span class="nav-text">自作validator</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Keihi Gi</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.2.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.2.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.2.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.2.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.2.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.2.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.2.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.2.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="距离上次开发苹果程序已经好多年了，那个时候用的还是Objective-c,后来也知道平托大力推进他的Swift语言，但是也从来没有深入了解过，几乎对这门语言一无所知。最近突然看到SwiftUI这么个东西，使用DSL，所见即所得的开发形式，极大的简化了开发界面的过程。于是稍微了解了一下。">
+<meta name="keywords" content="ios,swift,swiftui">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SwiftUI 初探">
+<meta property="og:url" content="http://yoursite.com/2020/09/26/swiftui-starter/index.html">
+<meta property="og:site_name" content="小屋">
+<meta property="og:description" content="距离上次开发苹果程序已经好多年了，那个时候用的还是Objective-c,后来也知道平托大力推进他的Swift语言，但是也从来没有深入了解过，几乎对这门语言一无所知。最近突然看到SwiftUI这么个东西，使用DSL，所见即所得的开发形式，极大的简化了开发界面的过程。于是稍微了解了一下。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2025-11-14T03:26:00.436Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SwiftUI 初探">
+<meta name="twitter:description" content="距离上次开发苹果程序已经好多年了，那个时候用的还是Objective-c,后来也知道平托大力推进他的Swift语言，但是也从来没有深入了解过，几乎对这门语言一无所知。最近突然看到SwiftUI这么个东西，使用DSL，所见即所得的开发形式，极大的简化了开发界面的过程。于是稍微了解了一下。">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/09/26/swiftui-starter/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>SwiftUI 初探 | 小屋</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小屋</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">小憩之处</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/26/swiftui-starter/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Keihi Gi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小屋">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SwiftUI 初探
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-09-26 22:10:26" itemprop="dateCreated datePublished" datetime="2020-09-26T22:10:26+08:00">2020-09-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2025-11-14 11:26:00" itemprop="dateModified" datetime="2025-11-14T11:26:00+08:00">2025-11-14</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>距离上次开发苹果程序已经好多年了，那个时候用的还是Objective-c,后来也知道平托大力推进他的Swift语言，但是也从来没有深入了解过，几乎对这门语言一无所知。最近突然看到SwiftUI这么个东西，使用DSL，所见即所得的开发形式，极大的简化了开发界面的过程。于是稍微了解了一下。<br><a id="more"></a></p>
+<h2 id="初见"><a href="#初见" class="headerlink" title="初见"></a>初见</h2><p>创建一个SwiftUI的最简单工程，会得到这么个界面。<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> SwiftUI</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ContentView</span>: <span class="title">View</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> body: some <span class="type">View</span> &#123;</span><br><span class="line">        <span class="type">Text</span>(<span class="string">"Hello, WQF!"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ContentView_Previews</span>: <span class="title">PreviewProvider</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">var</span> previews: some <span class="type">View</span> &#123;</span><br><span class="line">        <span class="type">ContentView</span>()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="懵逼"><a href="#懵逼" class="headerlink" title="懵逼"></a>懵逼</h2><p>这是个啥玩意儿，完全看不懂。<br>要是先学swift语法再回来看这段代码，我肯定是没时间，也没耐心，但是不学🈶️看不懂，咋办？只能一点儿点儿查了。</p>
+<h2 id="protocol"><a href="#protocol" class="headerlink" title="protocol"></a>protocol</h2><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ContentView</span>: <span class="title">View</span></span></span><br></pre></td></tr></table></figure>
+<p>这是个结构体吧，那这个<code>View</code>是个啥玩意儿？看样子像是父类或者接口？跳到定义看看吧。<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">protocol</span> <span class="title">View</span> </span>&#123;</span><br><span class="line">    <span class="keyword">associatedtype</span> <span class="type">Body</span> : <span class="type">View</span></span><br><span class="line">    @<span class="type">ViewBuilder</span> <span class="keyword">var</span> body: <span class="type">Self</span>.<span class="type">Body</span> &#123; <span class="keyword">get</span> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>嗯，是个协议，再查查swift的协议，虽然肯定有不一样的特性，但是它的作用就是跟接口是一样的，就是约定一定的行为。<br>接下来看看这个<code>View</code>约定了什么。</p>
+<h2 id="associatedtype"><a href="#associatedtype" class="headerlink" title="associatedtype"></a>associatedtype</h2><p>首先，它用这玩意儿<code>associatedtype</code>定义了一个类型<code>Body</code>，这个类型还必须遵循<code>View</code>协议。那这个<code>associatedtype</code>到底又是个啥？继续查。<br>原来<code>associatedtype</code>关键字修饰的变量，相当于一个占位符，而不能表示具体的类型。具体的类型需要让实现的类来指定。<br>也就是说<code>View</code>协议里，<code>Body</code>只是个占位符，表示一种数据类型（这个类型还必须实现View协议），这个数据类型只有当实现<code>View</code>协议的时候才能指定。<br>另外<code>View</code>协议还声明了一个只读属性<code>body</code>，它的类型就是<code>Body</code>类型。只有它前面的注解<code>@ViewBuilder</code>先放一放。</p>
+<h2 id="闭包，简化简化再简化"><a href="#闭包，简化简化再简化" class="headerlink" title="闭包，简化简化再简化"></a>闭包，简化简化再简化</h2><p>我们再回过头来看<code>ContentView</code>，它确实实现了<code>View</code>协议里的属性<code>body</code>，但是这种写法又是个什么鬼？声明一个变量，后面跟个大括号。它不应该是这个样子的，但是它是如何一步步落到这步田地的？<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> body: some <span class="type">View</span> &#123;</span><br><span class="line">    <span class="type">Text</span>(<span class="string">"Hello, WQF!"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>首先它应该是一个闭包执行后赋给变量才对，也就是说它本来的面目应该是这样的。<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> body: some <span class="type">View</span> = &#123; () -&gt; some <span class="type">View</span> <span class="keyword">in</span></span><br><span class="line">    <span class="keyword">return</span> <span class="type">Text</span>(<span class="string">"Hello, WQF!"</span>)</span><br><span class="line">&#125;()</span><br></pre></td></tr></table></figure></p>
+<p>闭包可以利用swift的推断能力省略参数类型以及返回类型变为<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> body: some <span class="type">View</span> = &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="type">Text</span>(<span class="string">"Hello, WQF!"</span>)</span><br><span class="line">&#125;()</span><br></pre></td></tr></table></figure></p>
+<p>如果闭包内只有一个表达式，可以移除关键字<code>return</code>变为<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> body: some <span class="type">View</span> = &#123;</span><br><span class="line">    <span class="type">Text</span>(<span class="string">"Hello, WQF!"</span>)</span><br><span class="line">&#125;()</span><br></pre></td></tr></table></figure></p>
+<p>因为这个闭包不需要传递实参，那么<code>=</code>和<code>()</code>也省略了吧<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> body: some <span class="type">View</span> &#123;</span><br><span class="line">    <span class="type">Text</span>(<span class="string">"Hello, WQF!"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>果然面目全非，落到这步田地。</p>
+<h2 id="好像哪里不对"><a href="#好像哪里不对" class="headerlink" title="好像哪里不对"></a>好像哪里不对</h2><p>关于<code>associatedtype</code>，有以下</p>
+<blockquote>
+<p>原来<code>associatedtype</code>关键字修饰的变量，相当于一个占位符，而不能表示具体的类型。<br>具体的类型需要让实现的类来指定。<br>也就是说在<code>ContentView</code>中就必须指定<code>Body</code>到底代表的啥类型了啊，这个<code>some View</code>是在这儿糊弄谁呢？查了查，发现这是苹果在给自己埋坑呢。如果简单只是返回一个Text还好说，直接写成下面即可。<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> body: <span class="type">Text</span> &#123;</span><br><span class="line">    <span class="type">Text</span>(<span class="string">"Hello, WQF!"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<p>但是，一个界面怎么可能只有一种Text类型，肯定有很多很多实现了View协议的组件类型。那么必须能够返回各种实现View协议的类型才可以。为了埋这个坑，苹果又发明一种叫<code>Opaque Result Type</code>，反正意思是，我肯定给你返回一种具体的类型，这个类型呢，符合View协议，但是你别问我到底是什么类型。很拗口，但是没办法，静态语言就是这么啰嗦。</p>
+<h2 id="好像又不对了"><a href="#好像又不对了" class="headerlink" title="好像又不对了"></a>好像又不对了</h2><p>body里肯定不止一个组件，再添加一个如何？<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> body: some <span class="type">View</span> &#123;</span><br><span class="line">    <span class="type">Text</span>(<span class="string">"Hello, WQF!"</span>)</span><br><span class="line">    <span class="type">Text</span>(<span class="string">"Hello, WQF!"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>好像也能执行啊，这不对啊，上面不是说了么，只闭包内只有一行代码的时候才能省略return的么？我记得View协议里还有个<code>@ViewBuilder</code>，是不是它搞的鬼？先看看它的定义吧。<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">@_functionBuilder <span class="keyword">public</span> <span class="class"><span class="keyword">struct</span> <span class="title">ViewBuilder</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">func</span> <span class="title">buildBlock</span><span class="params">()</span></span> -&gt; <span class="type">EmptyView</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">func</span> <span class="title">buildBlock</span>&lt;Content&gt;<span class="params">(<span class="number">_</span> content: Content)</span></span> -&gt; <span class="type">Content</span> <span class="keyword">where</span> <span class="type">Content</span> : <span class="type">View</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">ViewBuilder</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">func</span> <span class="title">buildBlock</span>&lt;C0, C1&gt;<span class="params">(<span class="number">_</span> c0: C0, <span class="number">_</span> c1: C1)</span></span> -&gt; <span class="type">TupleView</span>&lt;(<span class="type">C0</span>, <span class="type">C1</span>)&gt; <span class="keyword">where</span> <span class="type">C0</span> : <span class="type">View</span>, <span class="type">C1</span> : <span class="type">View</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">ViewBuilder</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">func</span> <span class="title">buildBlock</span>&lt;C0, C1, C2&gt;<span class="params">(<span class="number">_</span> c0: C0, <span class="number">_</span> c1: C1, <span class="number">_</span> c2: C2)</span></span> -&gt; <span class="type">TupleView</span>&lt;(<span class="type">C0</span>, <span class="type">C1</span>, <span class="type">C2</span>)&gt; <span class="keyword">where</span> <span class="type">C0</span> : <span class="type">View</span>, <span class="type">C1</span> : <span class="type">View</span>, <span class="type">C2</span> : <span class="type">View</span></span><br><span class="line">&#125;</span><br><span class="line">---省略---</span><br><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">ViewBuilder</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">func</span> <span class="title">buildBlock</span>&lt;C0, C1, C2, C3, C4, C5, C6, C7, C8, C9&gt;<span class="params">(<span class="number">_</span> c0: C0, <span class="number">_</span> c1: C1, <span class="number">_</span> c2: C2, <span class="number">_</span> c3: C3, <span class="number">_</span> c4: C4, <span class="number">_</span> c5: C5, <span class="number">_</span> c6: C6, <span class="number">_</span> c7: C7, <span class="number">_</span> c8: C8, <span class="number">_</span> c9: C9)</span></span> -&gt; <span class="type">TupleView</span>&lt;(<span class="type">C0</span>, <span class="type">C1</span>, <span class="type">C2</span>, <span class="type">C3</span>, <span class="type">C4</span>, <span class="type">C5</span>, <span class="type">C6</span>, <span class="type">C7</span>, <span class="type">C8</span>, <span class="type">C9</span>)&gt; <span class="keyword">where</span> <span class="type">C0</span> : <span class="type">View</span>, <span class="type">C1</span> : <span class="type">View</span>, <span class="type">C2</span> : <span class="type">View</span>, <span class="type">C3</span> : <span class="type">View</span>, <span class="type">C4</span> : <span class="type">View</span>, <span class="type">C5</span> : <span class="type">View</span>, <span class="type">C6</span> : <span class="type">View</span>, <span class="type">C7</span> : <span class="type">View</span>, <span class="type">C8</span> : <span class="type">View</span>, <span class="type">C9</span> : <span class="type">View</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>没完了，又冒出个<code>@_functionBuilder</code>，不过根据表现来看，也就是说被<code>@_functionBuilder</code>修饰过的结构体，再去修饰变量时，会先把返回的值进行一次builder，对于上面的ViewBuilder来说，如果返回的是一个组件那么就直接返回这个组件，如果是两个或以上的组件，那么会合成一个TupleView，那么对于上面的一个等效代码，类似于以下，还是一行代码，（等效代码不可编译）<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> body: some <span class="type">View</span> &#123;</span><br><span class="line">    viewBuilder -&gt; <span class="type">Content</span> <span class="keyword">in</span></span><br><span class="line">    <span class="keyword">let</span> text1 = <span class="type">Text</span>(<span class="string">"Hello, WQF!"</span>)</span><br><span class="line">    <span class="keyword">let</span> text2 = <span class="type">Text</span>(<span class="string">"Hello, WQF!"</span>)</span><br><span class="line">    <span class="keyword">return</span> viewBuilder.buildBlock(text1, text2)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>最终等效为<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> body: some <span class="type">View</span> &#123;</span><br><span class="line">    (<span class="type">Text</span>(<span class="string">"Hello, WQF!"</span>), <span class="type">Text</span>(<span class="string">"Hello, WQF!"</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>另外，我们也发现，View里只能包含十个子View，再多的话，只能分组包装起来了。比如<code>Group</code></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>上面大致分析了以下swiftui最简单的一个页面，分析的不够透彻，但是基本上能明白了每个关键词的用意。感觉Swift变得越来越复杂。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ios/" rel="tag"># ios</a>
+          
+            <a href="/tags/swift/" rel="tag"># swift</a>
+          
+            <a href="/tags/swiftui/" rel="tag"># swiftui</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/03/07/date-in-java/" rel="next" title="java中的日期">
+                <i class="fa fa-chevron-left"></i> java中的日期
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/11/07/swfitui-frame/" rel="prev" title="swiftui frame">
+                swiftui frame <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Keihi Gi</p>
+              <p class="site-description motion-element" itemprop="description">没事进来做做，喝杯茶，聊聊天。</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">44</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">21</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">63</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#初见"><span class="nav-number">1.</span> <span class="nav-text">初见</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#懵逼"><span class="nav-number">2.</span> <span class="nav-text">懵逼</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#protocol"><span class="nav-number">3.</span> <span class="nav-text">protocol</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#associatedtype"><span class="nav-number">4.</span> <span class="nav-text">associatedtype</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#闭包，简化简化再简化"><span class="nav-number">5.</span> <span class="nav-text">闭包，简化简化再简化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#好像哪里不对"><span class="nav-number">6.</span> <span class="nav-text">好像哪里不对</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#好像又不对了"><span class="nav-number">7.</span> <span class="nav-text">好像又不对了</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Keihi Gi</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.2.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.2.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.2.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.2.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.2.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.2.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

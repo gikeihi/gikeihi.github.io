@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.2.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.2.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="关于在docker中使用playwright，以及独立运行chrome的记录">
+<meta property="og:type" content="article">
+<meta property="og:title" content="playwright-chrome">
+<meta property="og:url" content="http://yoursite.com/2025/08/27/playwright-chrome/index.html">
+<meta property="og:site_name" content="小屋">
+<meta property="og:description" content="关于在docker中使用playwright，以及独立运行chrome的记录">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2025-11-14T03:26:00.435Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="playwright-chrome">
+<meta name="twitter:description" content="关于在docker中使用playwright，以及独立运行chrome的记录">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2025/08/27/playwright-chrome/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>playwright-chrome | 小屋</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小屋</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">小憩之处</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2025/08/27/playwright-chrome/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Keihi Gi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小屋">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">playwright-chrome
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2025-08-27 14:00:47" itemprop="dateCreated datePublished" datetime="2025-08-27T14:00:47+08:00">2025-08-27</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2025-11-14 11:26:00" itemprop="dateModified" datetime="2025-11-14T11:26:00+08:00">2025-11-14</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>关于在docker中使用playwright，以及独立运行chrome的记录<br><a id="more"></a></p>
+<h1 id="使用chromium"><a href="#使用chromium" class="headerlink" title="使用chromium"></a>使用chromium</h1><h2 id="创建dockerfile"><a href="#创建dockerfile" class="headerlink" title="创建dockerfile"></a>创建dockerfile</h2><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> mcr.microsoft.com/playwright:v1.<span class="number">55.0</span>-noble</span><br><span class="line"></span><br><span class="line"><span class="comment"># Install system packages (cached layer - rarely changes)</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get update &amp;&amp; apt-get install -y \</span></span><br><span class="line"><span class="bash">    xvfb \</span></span><br><span class="line"><span class="bash">    x11vnc \</span></span><br><span class="line"><span class="bash">    fluxbox \</span></span><br><span class="line"><span class="bash">    supervisor \</span></span><br><span class="line"><span class="bash">    python3-pip \</span></span><br><span class="line"><span class="bash">    git \</span></span><br><span class="line"><span class="bash">    net-tools \</span></span><br><span class="line"><span class="bash">    socat \</span></span><br><span class="line"><span class="bash">    ffmpeg \</span></span><br><span class="line"><span class="bash">    &amp;&amp; rm -rf /var/lib/apt/lists/*</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Install Python dependencies (separate layer for better caching)</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> pip3 install --<span class="built_in">break</span>-system-packages websockify</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Download external resources (separate layer)</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> git <span class="built_in">clone</span> https://github.com/novnc/noVNC.git /opt/noVNC</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Create user and directories (last - avoid cache invalidation)</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> groupadd -r playwright &amp;&amp; useradd -r -g playwright -G audio,video playwright \</span></span><br><span class="line"><span class="bash">    &amp;&amp; mkdir -p /home/playwright/.vnc /app/chrome-user-data /var/<span class="built_in">log</span>/supervisor \</span></span><br><span class="line"><span class="bash">    &amp;&amp; chown -R playwright:playwright /home/playwright /app /var/<span class="built_in">log</span>/supervisor</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> <span class="built_in">echo</span> <span class="string">'[supervisord]\n\</span></span></span><br><span class="line"><span class="bash">nodaemon=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">logfile=/var/<span class="built_in">log</span>/supervisor/supervisord.log\n\</span></span><br><span class="line"><span class="bash">logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">logfile_backups=3\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash">[program:xvfb]\n\</span></span><br><span class="line"><span class="bash"><span class="built_in">command</span>=Xvfb :99 -screen 0 1920x1080x24 -ac +extension GLX +render -noreset\n\</span></span><br><span class="line"><span class="bash">priority=10\n\</span></span><br><span class="line"><span class="bash">autorestart=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">stdout_logfile=/var/<span class="built_in">log</span>/supervisor/xvfb.log\n\</span></span><br><span class="line"><span class="bash">stderr_logfile=/var/<span class="built_in">log</span>/supervisor/xvfb.log\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_backups=3\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash">[program:socat]\n\</span></span><br><span class="line"><span class="bash"><span class="built_in">command</span>=socat TCP-LISTEN:9222,fork,reuseaddr TCP6:[::1]:9222\n\</span></span><br><span class="line"><span class="bash">priority=15\n\</span></span><br><span class="line"><span class="bash">autorestart=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">stdout_logfile=/var/<span class="built_in">log</span>/supervisor/socat.log\n\</span></span><br><span class="line"><span class="bash">stderr_logfile=/var/<span class="built_in">log</span>/supervisor/socat.log\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_backups=3\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash">[program:fluxbox]\n\</span></span><br><span class="line"><span class="bash"><span class="built_in">command</span>=bash -c <span class="string">"sleep 2 &amp;&amp; fluxbox"</span>\n\</span></span><br><span class="line"><span class="bash">priority=20\n\</span></span><br><span class="line"><span class="bash">environment=DISPLAY=:99\n\</span></span><br><span class="line"><span class="bash">autorestart=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">stdout_logfile=/var/<span class="built_in">log</span>/supervisor/fluxbox.log\n\</span></span><br><span class="line"><span class="bash">stderr_logfile=/var/<span class="built_in">log</span>/supervisor/fluxbox.log\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_backups=3\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash">[program:x11vnc]\n\</span></span><br><span class="line"><span class="bash"><span class="built_in">command</span>=bash -c <span class="string">"sleep 3 &amp;&amp; x11vnc -display :99 -forever -noxdamage -shared -rfbport 5901 -passwd wqf12345"</span>\n\</span></span><br><span class="line"><span class="bash">priority=20\n\</span></span><br><span class="line"><span class="bash">autorestart=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">stdout_logfile=/var/<span class="built_in">log</span>/supervisor/x11vnc.log\n\</span></span><br><span class="line"><span class="bash">stderr_logfile=/var/<span class="built_in">log</span>/supervisor/x11vnc.log\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_backups=3\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash">[program:chromium]\n\</span></span><br><span class="line"><span class="bash"><span class="built_in">command</span>=bash -c <span class="string">"sleep 8 &amp;&amp; rm -rf /app/chrome-user-data/SingletonLock /app/chrome-user-data/Singleton* &amp;&amp; /ms-playwright/chromium-1187/chrome-linux/chrome --remote-debugging-port=9222 --remote-debugging-address=127.0.0.1 --disable-dev-shm-usage --no-first-run --no-default-browser-check --disable-gpu --no-sandbox --user-data-dir=/app/chrome-user-data --display=:99 <span class="variable">$&#123;TARGET_URL:-about:blank&#125;</span>"</span>\n\</span></span><br><span class="line"><span class="bash">priority=25\n\</span></span><br><span class="line"><span class="bash">autorestart=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">environment=DISPLAY=:99\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">stdout_logfile=/var/<span class="built_in">log</span>/supervisor/chromium.log\n\</span></span><br><span class="line"><span class="bash">stderr_logfile=/var/<span class="built_in">log</span>/supervisor/chromium.log\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_backups=3\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash">[program:novnc]\n\</span></span><br><span class="line"><span class="bash"><span class="built_in">command</span>=bash -c <span class="string">"sleep 5 &amp;&amp; /opt/noVNC/utils/novnc_proxy --vnc localhost:5901 --listen 8080 --web /opt/noVNC"</span>\n\</span></span><br><span class="line"><span class="bash">priority=30\n\</span></span><br><span class="line"><span class="bash">autorestart=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">stdout_logfile=/var/<span class="built_in">log</span>/supervisor/novnc.log\n\</span></span><br><span class="line"><span class="bash">stderr_logfile=/var/<span class="built_in">log</span>/supervisor/novnc.log\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_backups=3<span class="string">' &gt; /etc/supervisor/conf.d/supervisord.conf</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /app</span></span><br><span class="line"><span class="keyword">ENV</span> DISPLAY=:<span class="number">99</span></span><br><span class="line"><span class="keyword">ENV</span> TARGET_URL=about:blank</span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">8080</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">9222</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">USER</span> playwright</span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> [<span class="string">"/usr/bin/supervisord"</span>, <span class="string">"-c"</span>, <span class="string">"/etc/supervisor/conf.d/supervisord.conf"</span>]</span></span><br></pre></td></tr></table></figure>
+<p>几个关键点说明：  </p>
+<ul>
+<li>通过supervisor来管理多个进程</li>
+<li>使用xvfb来创建虚拟显示器</li>
+<li>使用x11vnc来创建vnc服务</li>
+<li>使用novnc来创建web端的vnc访问</li>
+<li>这其中因为chrome已无法监听0.0.0.0地址，所以使用socat做了一个地址转发</li>
+<li>chrome的用户数据目录挂载在/app/chrome-user-data，方便持久化，由于每次启动时chrome会创建SingletonLock文件，所以每次启动前需要删除</li>
+</ul>
+<h2 id="构建并运行容器"><a href="#构建并运行容器" class="headerlink" title="构建并运行容器"></a>构建并运行容器</h2><p>创建一个脚本run.sh<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/zsh</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 构建 Docker 镜像</span></span><br><span class="line">echo "构建 Docker 镜像..."</span><br><span class="line">docker build -t playwright-env .</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 运行 Docker 容器</span></span><br><span class="line">echo "启动 Docker 容器..."</span><br><span class="line">docker run -d \</span><br><span class="line">  --name playwright-env \</span><br><span class="line">  -p 8080:8080 \</span><br><span class="line">  -p 9222:9222 \</span><br><span class="line">  -e DISPLAY=:99 \</span><br><span class="line">  -e VNC_PASSWORD=playwright \</span><br><span class="line">  -v ./workspace:/app \</span><br><span class="line">  --shm-size=2g \</span><br><span class="line">  -it \</span><br><span class="line">  --restart=unless-stopped \</span><br><span class="line">  playwright-env</span><br><span class="line"></span><br><span class="line">echo "容器已启动，名称: playwright-env"</span><br><span class="line">echo "端口映射: 8080:8080, 9222:9222"</span><br></pre></td></tr></table></figure></p>
+<h1 id="还有个使用tigervnc替代xvfb-x11vnc的方案"><a href="#还有个使用tigervnc替代xvfb-x11vnc的方案" class="headerlink" title="还有个使用tigervnc替代xvfb+x11vnc的方案"></a>还有个使用tigervnc替代xvfb+x11vnc的方案</h1><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> mcr.microsoft.com/playwright:v1.<span class="number">55.0</span>-noble</span><br><span class="line"></span><br><span class="line"><span class="comment"># Install system packages (cached layer - rarely changes)</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get update &amp;&amp; apt-get install -y \</span></span><br><span class="line"><span class="bash">    tigervnc-standalone-server \</span></span><br><span class="line"><span class="bash">    tigervnc-common \</span></span><br><span class="line"><span class="bash">    fluxbox \</span></span><br><span class="line"><span class="bash">    supervisor \</span></span><br><span class="line"><span class="bash">    python3-pip \</span></span><br><span class="line"><span class="bash">    git \</span></span><br><span class="line"><span class="bash">    net-tools \</span></span><br><span class="line"><span class="bash">    socat \</span></span><br><span class="line"><span class="bash">    ffmpeg \</span></span><br><span class="line"><span class="bash">    &amp;&amp; rm -rf /var/lib/apt/lists/*</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Install Python dependencies (separate layer for better caching)</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> pip3 install --<span class="built_in">break</span>-system-packages websockify</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Download external resources (separate layer)</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> git <span class="built_in">clone</span> https://github.com/novnc/noVNC.git /opt/noVNC \</span></span><br><span class="line"><span class="bash">    &amp;&amp; ln -sf /opt/noVNC/vnc.html /opt/noVNC/index.html</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Create user and directories (last - avoid cache invalidation)</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> groupadd -r playwright &amp;&amp; useradd -r -g playwright -G audio,video playwright \</span></span><br><span class="line"><span class="bash">    &amp;&amp; mkdir -p /home/playwright/.vnc /app/chrome-user-data /var/<span class="built_in">log</span>/supervisor \</span></span><br><span class="line"><span class="bash">    &amp;&amp; chown -R playwright:playwright /home/playwright /app /var/<span class="built_in">log</span>/supervisor</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建VNC初始化脚本</span></span><br><span class="line"><span class="comment"># 这个脚本会在容器启动时执行,根据环境变量动态生成密码文件</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> <span class="built_in">echo</span> <span class="string">'#!/bin/bash\n\</span></span></span><br><span class="line"><span class="bash"><span class="built_in">set</span> -e\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash"><span class="comment"># 从环境变量获取密码,如果未设置则使用默认密码\n\</span></span></span><br><span class="line"><span class="bash">VNC_PASSWORD=<span class="variable">$&#123;VNC_PASSWORD:-wqf12345&#125;</span>\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash"><span class="built_in">echo</span> <span class="string">"Initializing VNC password..."</span>\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash"><span class="comment"># 生成VNC密码文件\n\</span></span></span><br><span class="line"><span class="bash"><span class="comment"># 使用vncpasswd -f命令将明文密码转换为VNC加密格式\n\</span></span></span><br><span class="line"><span class="bash"><span class="built_in">echo</span> <span class="string">"<span class="variable">$&#123;VNC_PASSWORD&#125;</span>"</span> | vncpasswd -f &gt; /home/playwright/.vnc/passwd\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash"><span class="comment"># 设置正确的权限和所有者\n\</span></span></span><br><span class="line"><span class="bash"><span class="comment"># 600权限确保只有所有者可以读写,提高安全性\n\</span></span></span><br><span class="line"><span class="bash">chmod 600 /home/playwright/.vnc/passwd\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash"><span class="built_in">echo</span> <span class="string">"VNC password initialized successfully"</span>\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash"><span class="comment"># 启动supervisord\n\</span></span></span><br><span class="line"><span class="bash"><span class="comment"># exec确保supervisord成为PID 1,可以正确接收信号\n\</span></span></span><br><span class="line"><span class="bash"><span class="built_in">exec</span> /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf\n\</span></span><br><span class="line"><span class="bash"><span class="string">' &gt; /docker-entrypoint.sh \</span></span></span><br><span class="line"><span class="bash">    &amp;&amp; chmod +x /docker-entrypoint.sh</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Supervisor配置</span></span><br><span class="line"><span class="comment"># 注意:Xvnc启动时密码文件已经由entrypoint脚本创建好了</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> <span class="built_in">echo</span> <span class="string">'[supervisord]\n\</span></span></span><br><span class="line"><span class="bash">nodaemon=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">logfile=/var/<span class="built_in">log</span>/supervisor/supervisord.log\n\</span></span><br><span class="line"><span class="bash">logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">logfile_backups=3\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash">[program:xvnc]\n\</span></span><br><span class="line"><span class="bash"><span class="built_in">command</span>=Xvnc :99 -geometry 1920x1080 -depth 24 -rfbport 5901 -SecurityTypes VncAuth -PasswordFile /home/playwright/.vnc/passwd -AlwaysShared -localhost no\n\</span></span><br><span class="line"><span class="bash">priority=10\n\</span></span><br><span class="line"><span class="bash">autorestart=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">stdout_logfile=/var/<span class="built_in">log</span>/supervisor/xvnc.log\n\</span></span><br><span class="line"><span class="bash">stderr_logfile=/var/<span class="built_in">log</span>/supervisor/xvnc.log\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_backups=3\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash">[program:socat]\n\</span></span><br><span class="line"><span class="bash"><span class="built_in">command</span>=socat TCP-LISTEN:9222,fork,reuseaddr TCP6:[::1]:9222\n\</span></span><br><span class="line"><span class="bash">priority=15\n\</span></span><br><span class="line"><span class="bash">autorestart=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">stdout_logfile=/var/<span class="built_in">log</span>/supervisor/socat.log\n\</span></span><br><span class="line"><span class="bash">stderr_logfile=/var/<span class="built_in">log</span>/supervisor/socat.log\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_backups=3\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash">[program:fluxbox]\n\</span></span><br><span class="line"><span class="bash"><span class="built_in">command</span>=bash -c <span class="string">"sleep 2 &amp;&amp; fluxbox"</span>\n\</span></span><br><span class="line"><span class="bash">priority=20\n\</span></span><br><span class="line"><span class="bash">environment=DISPLAY=:99\n\</span></span><br><span class="line"><span class="bash">autorestart=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">stdout_logfile=/var/<span class="built_in">log</span>/supervisor/fluxbox.log\n\</span></span><br><span class="line"><span class="bash">stderr_logfile=/var/<span class="built_in">log</span>/supervisor/fluxbox.log\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_backups=3\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash">[program:chromium]\n\</span></span><br><span class="line"><span class="bash"><span class="built_in">command</span>=bash -c <span class="string">"sleep 5 &amp;&amp; rm -rf /app/chrome-user-data/SingletonLock /app/chrome-user-data/Singleton* &amp;&amp; /ms-playwright/chromium-1187/chrome-linux/chrome --remote-debugging-port=9222 --remote-debugging-address=127.0.0.1 --disable-dev-shm-usage --no-first-run --no-default-browser-check --disable-gpu --no-sandbox --user-data-dir=/app/chrome-user-data --display=:99 <span class="variable">$&#123;TARGET_URL:-about:blank&#125;</span>"</span>\n\</span></span><br><span class="line"><span class="bash">priority=25\n\</span></span><br><span class="line"><span class="bash">autorestart=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">environment=DISPLAY=:99\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">stdout_logfile=/var/<span class="built_in">log</span>/supervisor/chromium.log\n\</span></span><br><span class="line"><span class="bash">stderr_logfile=/var/<span class="built_in">log</span>/supervisor/chromium.log\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_backups=3\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash">[program:novnc]\n\</span></span><br><span class="line"><span class="bash"><span class="built_in">command</span>=bash -c <span class="string">"sleep 3 &amp;&amp; /opt/noVNC/utils/novnc_proxy --vnc localhost:5901 --listen 8080 --web /opt/noVNC"</span>\n\</span></span><br><span class="line"><span class="bash">priority=30\n\</span></span><br><span class="line"><span class="bash">autorestart=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">stdout_logfile=/var/<span class="built_in">log</span>/supervisor/novnc.log\n\</span></span><br><span class="line"><span class="bash">stderr_logfile=/var/<span class="built_in">log</span>/supervisor/novnc.log\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_backups=3<span class="string">' &gt; /etc/supervisor/conf.d/supervisord.conf</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /app</span></span><br><span class="line"><span class="keyword">ENV</span> DISPLAY=:<span class="number">99</span></span><br><span class="line"><span class="keyword">ENV</span> TARGET_URL=about:blank</span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">8080</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">9222</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">USER</span> playwright</span><br><span class="line"><span class="comment"># 使用自定义的entrypoint脚本替代直接启动supervisord</span></span><br><span class="line"><span class="comment"># 这样可以在启动前执行密码初始化</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> [<span class="string">"/docker-entrypoint.sh"</span>]</span></span><br></pre></td></tr></table></figure>
+<h1 id="构建并运行容器-1"><a href="#构建并运行容器-1" class="headerlink" title="构建并运行容器"></a>构建并运行容器</h1><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/zsh</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 构建 Docker 镜像</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"构建 Docker 镜像..."</span></span><br><span class="line">docker build -t playwright-tigervnc .</span><br><span class="line"></span><br><span class="line"><span class="comment"># 若存在同名容器则先强制删除</span></span><br><span class="line"><span class="keyword">if</span> [ -n <span class="string">"<span class="variable">$(docker ps -aq -f name=^playwright-tigervnc$)</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">"检测到已有同名容器，正在删除..."</span></span><br><span class="line">  docker rm -f playwright-tigervnc</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行 Docker 容器</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"启动 Docker 容器..."</span></span><br><span class="line">docker run -d \</span><br><span class="line">  --name playwright-tigervnc \</span><br><span class="line">  -p 8080:8080 \</span><br><span class="line">  -p 9222:9222 \</span><br><span class="line">  -e VNC_PASSWORD=password \</span><br><span class="line">  -v ./workspace:/app \</span><br><span class="line">  --shm-size=2g \</span><br><span class="line">  -it \</span><br><span class="line">  --restart=unless-stopped \</span><br><span class="line">  playwright-tigervnc</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"容器已启动，名称: playwright-tigervnc"</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"端口映射: 8080:8080, 9222:9222"</span></span><br></pre></td></tr></table></figure>
+<h1 id="使用chrome"><a href="#使用chrome" class="headerlink" title="使用chrome"></a>使用chrome</h1><h2 id="创建dockerfile-1"><a href="#创建dockerfile-1" class="headerlink" title="创建dockerfile"></a>创建dockerfile</h2><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># =========================================================</span></span><br><span class="line"><span class="comment"># Base: Playwright (Ubuntu 24.04 Noble) + Google Chrome</span></span><br><span class="line"><span class="comment"># 中文字体 + Xvfb + VNC/noVNC + fluxbox + supervisord</span></span><br><span class="line"><span class="comment"># =========================================================</span></span><br><span class="line"><span class="keyword">FROM</span> mcr.microsoft.com/playwright:v1.<span class="number">55.0</span>-noble</span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> DEBIAN_FRONTEND=noninteractive</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1) 系统依赖（较稳定，单独层缓存）</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get update &amp;&amp; apt-get install -y \</span></span><br><span class="line"><span class="bash">    xvfb x11vnc socat fluxbox supervisor \</span></span><br><span class="line"><span class="bash">    python3-pip git net-tools \</span></span><br><span class="line"><span class="bash">    locales wget gpg \</span></span><br><span class="line"><span class="bash">    --no-install-recommends &amp;&amp; \</span></span><br><span class="line"><span class="bash">    rm -rf /var/lib/apt/lists/*</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2) Python 依赖（websockify 给 noVNC 用）</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> pip3 install --<span class="built_in">break</span>-system-packages websockify</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3) 安装 Google Chrome（正确导入 keyring：先 dearmor 再引用）</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> <span class="built_in">set</span> -eux; \</span></span><br><span class="line"><span class="bash">    install -d -m 0755 /etc/apt/keyrings; \</span></span><br><span class="line"><span class="bash">    curl -fsSL https://dl.google.com/linux/linux_signing_key.pub \</span></span><br><span class="line"><span class="bash">      | gpg --dearmor -o /etc/apt/keyrings/google-linux-signing.gpg; \</span></span><br><span class="line"><span class="bash">    chmod 0644 /etc/apt/keyrings/google-linux-signing.gpg; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb [arch=amd64 signed-by=/etc/apt/keyrings/google-linux-signing.gpg] http://dl.google.com/linux/chrome/deb/ stable main"</span> \</span></span><br><span class="line"><span class="bash">      &gt; /etc/apt/sources.list.d/google-chrome.list; \</span></span><br><span class="line"><span class="bash">    apt-get update; \</span></span><br><span class="line"><span class="bash">    apt-get install -y --no-install-recommends google-chrome-stable; \</span></span><br><span class="line"><span class="bash">    rm -rf /var/lib/apt/lists/*</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4) 中文字体 + 生成中文/英文 UTF-8 本地化环境</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get update &amp;&amp; apt-get install -y \</span></span><br><span class="line"><span class="bash">      fonts-wqy-zenhei fonts-wqy-microhei fonts-noto-cjk \</span></span><br><span class="line"><span class="bash">    &amp;&amp; sed -i <span class="string">'s/^# *\(zh_CN.UTF-8 UTF-8\)/\1/'</span> /etc/locale.gen \</span></span><br><span class="line"><span class="bash">    &amp;&amp; sed -i <span class="string">'s/^# *\(en_US.UTF-8 UTF-8\)/\1/'</span> /etc/locale.gen \</span></span><br><span class="line"><span class="bash">    &amp;&amp; locale-gen \</span></span><br><span class="line"><span class="bash">    &amp;&amp; update-locale LANG=zh_CN.UTF-8 \</span></span><br><span class="line"><span class="bash">    &amp;&amp; rm -rf /var/lib/apt/lists/*</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> LANG=zh_CN.UTF-<span class="number">8</span> \</span><br><span class="line">    LC_ALL=zh_CN.UTF-<span class="number">8</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 5) 下载 noVNC</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> git <span class="built_in">clone</span> https://github.com/novnc/noVNC.git /opt/noVNC</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 6) 创建运行用户与目录</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> groupadd -r playwright &amp;&amp; useradd -r -g playwright -G audio,video playwright &amp;&amp; \</span></span><br><span class="line"><span class="bash">    mkdir -p /home/playwright/.vnc /app/chrome-user-data /var/<span class="built_in">log</span>/supervisor &amp;&amp; \</span></span><br><span class="line"><span class="bash">    chown -R playwright:playwright /home/playwright /app /var/<span class="built_in">log</span>/supervisor</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 8) supervisord 配置</span></span><br><span class="line"><span class="comment">#    - Xvfb: :99 虚拟显示</span></span><br><span class="line"><span class="comment">#    - fluxbox: 轻量窗口管理器</span></span><br><span class="line"><span class="comment">#    - x11vnc: 使用 -rfbauth，运行前若检测到环境变量 VNC_PASSWORD 则动态更新密码文件</span></span><br><span class="line"><span class="comment">#    - noVNC: 监听 8080，代理至 localhost:5901</span></span><br><span class="line"><span class="comment">#    - Google Chrome: 开启远程调试端口 9222，绑定 0.0.0.0 方便容器外访问</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> <span class="built_in">echo</span> <span class="string">'[supervisord]\n\</span></span></span><br><span class="line"><span class="bash">nodaemon=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">logfile=/var/<span class="built_in">log</span>/supervisor/supervisord.log\n\</span></span><br><span class="line"><span class="bash">logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">logfile_backups=3\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash">[program:xvfb]\n\</span></span><br><span class="line"><span class="bash"><span class="built_in">command</span>=Xvfb :99 -screen 0 1920x1080x24 -ac +extension GLX +render -noreset\n\</span></span><br><span class="line"><span class="bash">priority=10\n\</span></span><br><span class="line"><span class="bash">autorestart=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">stdout_logfile=/var/<span class="built_in">log</span>/supervisor/xvfb.log\n\</span></span><br><span class="line"><span class="bash">stderr_logfile=/var/<span class="built_in">log</span>/supervisor/xvfb.log\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_backups=3\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash">[program:socat]\n\</span></span><br><span class="line"><span class="bash"><span class="built_in">command</span>=socat TCP-LISTEN:9222,fork,reuseaddr TCP6:[::1]:9222\n\</span></span><br><span class="line"><span class="bash">priority=15\n\</span></span><br><span class="line"><span class="bash">autorestart=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">stdout_logfile=/var/<span class="built_in">log</span>/supervisor/socat.log\n\</span></span><br><span class="line"><span class="bash">stderr_logfile=/var/<span class="built_in">log</span>/supervisor/socat.log\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_backups=3\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash">[program:fluxbox]\n\</span></span><br><span class="line"><span class="bash"><span class="built_in">command</span>=bash -c <span class="string">"sleep 2 &amp;&amp; fluxbox"</span>\n\</span></span><br><span class="line"><span class="bash">priority=20\n\</span></span><br><span class="line"><span class="bash">environment=DISPLAY=:99\n\</span></span><br><span class="line"><span class="bash">autorestart=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">stdout_logfile=/var/<span class="built_in">log</span>/supervisor/fluxbox.log\n\</span></span><br><span class="line"><span class="bash">stderr_logfile=/var/<span class="built_in">log</span>/supervisor/fluxbox.log\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_backups=3\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash">[program:x11vnc]\n\</span></span><br><span class="line"><span class="bash"><span class="built_in">command</span>=bash -c <span class="string">"sleep 3 &amp;&amp; x11vnc -display :99 -forever -noxdamage -shared -rfbport 5901 -passwd wqf12345"</span>\n\</span></span><br><span class="line"><span class="bash">priority=20\n\</span></span><br><span class="line"><span class="bash">autorestart=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">stdout_logfile=/var/<span class="built_in">log</span>/supervisor/x11vnc.log\n\</span></span><br><span class="line"><span class="bash">stderr_logfile=/var/<span class="built_in">log</span>/supervisor/x11vnc.log\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_backups=3\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash">[program:chromium]\n\</span></span><br><span class="line"><span class="bash"><span class="built_in">command</span>=bash -c <span class="string">"sleep 8 &amp;&amp; rm -rf /app/chrome-user-data/SingletonLock /app/chrome-user-data/Singleton* &amp;&amp; google-chrome --remote-debugging-port=9222 --remote-debugging-address=127.0.0.1 --disable-dev-shm-usage --no-first-run --no-default-browser-check --disable-gpu --no-sandbox --user-data-dir=/app/chrome-user-data --display=:99 <span class="variable">$&#123;TARGET_URL:-about:blank&#125;</span>"</span>\n\</span></span><br><span class="line"><span class="bash">priority=25\n\</span></span><br><span class="line"><span class="bash">autorestart=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">environment=DISPLAY=:99\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">stdout_logfile=/var/<span class="built_in">log</span>/supervisor/chromium.log\n\</span></span><br><span class="line"><span class="bash">stderr_logfile=/var/<span class="built_in">log</span>/supervisor/chromium.log\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_backups=3\n\</span></span><br><span class="line"><span class="bash">\n\</span></span><br><span class="line"><span class="bash">[program:novnc]\n\</span></span><br><span class="line"><span class="bash"><span class="built_in">command</span>=bash -c <span class="string">"sleep 5 &amp;&amp; /opt/noVNC/utils/novnc_proxy --vnc localhost:5901 --listen 8080 --web /opt/noVNC"</span>\n\</span></span><br><span class="line"><span class="bash">priority=30\n\</span></span><br><span class="line"><span class="bash">autorestart=<span class="literal">true</span>\n\</span></span><br><span class="line"><span class="bash">user=playwright\n\</span></span><br><span class="line"><span class="bash">stdout_logfile=/var/<span class="built_in">log</span>/supervisor/novnc.log\n\</span></span><br><span class="line"><span class="bash">stderr_logfile=/var/<span class="built_in">log</span>/supervisor/novnc.log\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_maxbytes=10MB\n\</span></span><br><span class="line"><span class="bash">stdout_logfile_backups=3<span class="string">' &gt; /etc/supervisor/conf.d/supervisord.conf</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /app</span></span><br><span class="line"><span class="keyword">ENV</span> DISPLAY=:<span class="number">99</span></span><br><span class="line"><span class="keyword">ENV</span> TARGET_URL=about:blank</span><br><span class="line"></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">8080</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">9222</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">USER</span> playwright</span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> [<span class="string">"/usr/bin/supervisord"</span>, <span class="string">"-c"</span>, <span class="string">"/etc/supervisor/conf.d/supervisord.conf"</span>]</span></span><br></pre></td></tr></table></figure>
+<h2 id="构建并运行容器-2"><a href="#构建并运行容器-2" class="headerlink" title="构建并运行容器"></a>构建并运行容器</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 构建 Docker 镜像</span></span><br><span class="line">echo "构建 Docker 镜像..."</span><br><span class="line">docker build -t pw-chrome-cn .</span><br><span class="line"></span><br><span class="line">mkdir -p ./workspace</span><br><span class="line">chmod 777 ./workspace</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 运行 Docker 容器</span></span><br><span class="line">echo "启动 Docker 容器..."</span><br><span class="line">docker run -d --rm \</span><br><span class="line">  --name pw-chrome-cn \</span><br><span class="line">  -p 8080:8080 \</span><br><span class="line">  -p 9222:9222 \</span><br><span class="line">  -e DISPLAY=:99 \</span><br><span class="line">  -v ./workspace:/app \</span><br><span class="line">  --shm-size=2g \</span><br><span class="line">  -it \</span><br><span class="line">  pw-chrome-cn</span><br><span class="line"></span><br><span class="line">echo "容器已启动，名称: pw-chrome-cn"</span><br><span class="line">echo "端口映射: 8080:8080, 9222:9222"</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2023/11/29/python-coroutine/" rel="next" title="Python协程">
+                <i class="fa fa-chevron-left"></i> Python协程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2025/09/10/appium-and-mitmproxy/" rel="prev" title="appium and mitmproxy">
+                appium and mitmproxy <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Keihi Gi</p>
+              <p class="site-description motion-element" itemprop="description">没事进来做做，喝杯茶，聊聊天。</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">44</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">21</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">63</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#使用chromium"><span class="nav-number">1.</span> <span class="nav-text">使用chromium</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建dockerfile"><span class="nav-number">1.1.</span> <span class="nav-text">创建dockerfile</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构建并运行容器"><span class="nav-number">1.2.</span> <span class="nav-text">构建并运行容器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#还有个使用tigervnc替代xvfb-x11vnc的方案"><span class="nav-number">2.</span> <span class="nav-text">还有个使用tigervnc替代xvfb+x11vnc的方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#构建并运行容器-1"><span class="nav-number">3.</span> <span class="nav-text">构建并运行容器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用chrome"><span class="nav-number">4.</span> <span class="nav-text">使用chrome</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建dockerfile-1"><span class="nav-number">4.1.</span> <span class="nav-text">创建dockerfile</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构建并运行容器-2"><span class="nav-number">4.2.</span> <span class="nav-text">构建并运行容器</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Keihi Gi</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.2.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.2.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.2.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.2.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.2.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.2.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

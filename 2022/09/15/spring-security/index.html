@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.2.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.2.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="这不是个完整的spring security介绍文章，只是简单的介绍比较流行场景下，几个关键的类。">
+<meta name="keywords" content="java,spring boot,spring security">
+<meta property="og:type" content="article">
+<meta property="og:title" content="spring security的几个关键类">
+<meta property="og:url" content="http://yoursite.com/2022/09/15/spring-security/index.html">
+<meta property="og:site_name" content="小屋">
+<meta property="og:description" content="这不是个完整的spring security介绍文章，只是简单的介绍比较流行场景下，几个关键的类。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2025-11-14T03:26:00.435Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="spring security的几个关键类">
+<meta name="twitter:description" content="这不是个完整的spring security介绍文章，只是简单的介绍比较流行场景下，几个关键的类。">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2022/09/15/spring-security/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>spring security的几个关键类 | 小屋</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小屋</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">小憩之处</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/09/15/spring-security/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Keihi Gi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小屋">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">spring security的几个关键类
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2022-09-15 11:46:00" itemprop="dateCreated datePublished" datetime="2022-09-15T11:46:00+08:00">2022-09-15</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2025-11-14 11:26:00" itemprop="dateModified" datetime="2025-11-14T11:26:00+08:00">2025-11-14</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这不是个完整的spring security介绍文章，只是简单的介绍比较流行场景下，几个关键的类。<br><a id="more"></a></p>
+<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>我们平时遇到到最简单，也是最熟悉的认证过程是这样的</p>
+<ul>
+<li>用户在登录页面输入用户名密码</li>
+<li>验证用户密码是否正确</li>
+<li>验证成功后，把用户的验证信息放到session</li>
+<li>用户访问页面时先从session拿到用户的验证信息，然后再访问页面<br>那么以上几个步骤是从哪个类来处理的呢？</li>
+</ul>
+<h1 id="过滤器"><a href="#过滤器" class="headerlink" title="过滤器"></a>过滤器</h1><p>首先整个spring security是用过滤器来处理的。</p>
+<h2 id="用户名密码的获取"><a href="#用户名密码的获取" class="headerlink" title="用户名密码的获取"></a>用户名密码的获取</h2><p>类<code>AbstractAuthenticationProcessingFilter</code>(其实现类<code>UsernamePasswordAuthenticationFilter</code>)用来从请求中获取用户名和密码，并把其包装到一个特定的类<code>UsernamePasswordAuthenticationToken</code>，然后调用<code>AuthenticationManager</code>其实现类<code>ProviderManager</code>来循环调用<code>AuthenticationProvider</code>（其实现类为<code>DaoAuthenticationProvider</code>）来处理认证过程。</p>
+<h2 id="认证处理"><a href="#认证处理" class="headerlink" title="认证处理"></a>认证处理</h2><p>类<code>AbstractUserDetailsAuthenticationProvider</code>负责处理<code>UsernamePasswordAuthenticationToken</code>类型的用户信息。这是个虚拟类，他的实现类是<code>DaoAuthenticationProvider</code><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">supports</span><span class="params">(Class&lt;?&gt; authentication)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>并且需要在方法<code>authenticate</code>中完成整个认证过程，包括用户信息的获取（通过retrieveUser方法来实现）<br>以及密码匹配的验证（通过方法<code>additionalAuthenticationChecks</code>来实现）</p>
+<h2 id="保存到session"><a href="#保存到session" class="headerlink" title="保存到session"></a>保存到session</h2><p>认证成功后，会通过调用<code>SessionAuthenticationStrategy</code>（实现类<code>ChangeSessionIdAuthenticationStrategy</code>）的方法<code>onAuthentication</code>来保存认证信息。</p>
+<h2 id="用户访问"><a href="#用户访问" class="headerlink" title="用户访问"></a>用户访问</h2><p>过滤器<code>SecurityContextPersistenceFilter</code>里，通过<code>RequestAttributeSecurityContextRepository</code>来获取session里的信息，并把它放到<code>SecurityContextHolder</code>里进行管理。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SecurityContextHolder.setContext(contextBeforeChainExecution);</span><br></pre></td></tr></table></figure></p>
+<p>如果session里没有这个信息，那么后面的过滤器<code>AnonymousAuthenticationFilter</code>会放置一个<code>AnonymousAuthenticationToken</code>进去。<br>最后一个过滤器<code>FilterSecurityInterceptor</code>通过获取到的用户信息来验证用户是否有权限访问该页面</p>
+<h2 id="Remember-me"><a href="#Remember-me" class="headerlink" title="Remember me"></a>Remember me</h2><p>如果登陆设置里开启了<code>记住我</code>这个功能，那么就相当于注入了<code>RememberMeAuthenticationFilter</code>这个过滤器。<br>根据注入的<code>RememberMeServices</code>实例的不同，这里有两种处理方式</p>
+<ul>
+<li>TokenBasedRememberMeServices<br>这个比较简单，只是简单的把用户名和密码通过md5加密的方式，把用户信息通过cookie的方式保存在前端，用来验证用户的合法性</li>
+<li>PersistentTokenBasedRememberMeServices<br>这种模式，会把token放到数据库里一份儿，再次登录会替换为新的。</li>
+</ul>
+<p>这两种之间的区别是，如果token被人劫持后，第一种方式，两个人都可以同时登录成功。而第二种方式，只要用户再登录一次，数据库里的token会重新生成，这样即使被劫持，也不可再用了。</p>
+<h1 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h1><p>所以，如果用户想自己实现一个从页面获取信息并认证的处理的话，可以实现<code>AbstractAuthenticationProcessingFilter</code>类，然后注入一个实现<code>AbstractUserDetailsAuthenticationProvider</code>的类来执行认证过程。但是这套体系是通过session来对认证信息进行保管的，所以如果认证过程是通过jwt来完成的话，就不能沿用这套体系了。</p>
+<h1 id="jwt"><a href="#jwt" class="headerlink" title="jwt"></a>jwt</h1><p>如果想使用jwt的话，可以自定义一个filter处理认证，并直接返回生成的jwt token，然后再用spring-boot-starter-oauth2-resource-server中的OAuth2ResourceServerConfigurer::jwt对每个请求提交的jwt token进行认证<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);</span><br></pre></td></tr></table></figure></p>
+<p>如果<code>JwtAuthenticationProvider</code>所生成的<code>JwtAuthenticationToken</code>不大符合需求的话，也可以自定义.</p>
+<h1 id="题外话"><a href="#题外话" class="headerlink" title="题外话"></a>题外话</h1><p>关于jwt，说个题外话，那就是关于jwt，他算是登录信息（类似于用户名密码），还是用户标识（类似于SessionId）</p>
+<ul>
+<li>如果你把它看成是登录信息，比如在其他网站上登录后，又跳转到本系统，那么其实就算是用jwt来登录我们的系统，这个时候用上面的<code>OAuth2ResourceServerConfigurer::jwt</code>比较合适，通过<code>BearerTokenAuthenticationFilter</code>来获取<code>BearerTokenAuthenticationToken</code>，然后通过<code>JwtAuthenticationProvider</code>来进行验证。</li>
+<li>但是你把它当成是用户标识，比如在本系统登录，生成了jwt，然后再访问本系统，那么这个jwt就有点儿类似于SessionId这样的标识了，那么获取<code>SecurityContext</code>就是通过过滤器<code>SecurityContextHolderFilter</code>来实现的<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http.securityContext()</span><br><span class="line">        .requireExplicitSave(<span class="keyword">true</span>)</span><br><span class="line">        .securityContextRepository(securityContextRepository);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>通过自定义<code>SecurityContextRepository</code>来对jwt进行处理。</p>
+<p>另外关于<code>记住我</code>功能，因为对于浏览器，请求的数据无法强绑定，所以如果用户的token被劫持的话，服务器端是没有办法查知的。只有一个IP地址可以简单的验证一下。<br>浏览器强制使用ssl，并保证自己的电脑没有安装奇怪的程序的证书和程序的话，基本上能防止token被劫持。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/spring-boot/" rel="tag"># spring boot</a>
+          
+            <a href="/tags/spring-security/" rel="tag"># spring security</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/08/22/use-mapstruct/" rel="next" title="mapstruct的几个使用方法">
+                <i class="fa fa-chevron-left"></i> mapstruct的几个使用方法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/09/17/send-mail-by-jakarta-mail/" rel="prev" title="使用jakarta mail发送邮件">
+                使用jakarta mail发送邮件 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Keihi Gi</p>
+              <p class="site-description motion-element" itemprop="description">没事进来做做，喝杯茶，聊聊天。</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">44</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">21</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">63</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#过滤器"><span class="nav-number">2.</span> <span class="nav-text">过滤器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#用户名密码的获取"><span class="nav-number">2.1.</span> <span class="nav-text">用户名密码的获取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#认证处理"><span class="nav-number">2.2.</span> <span class="nav-text">认证处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#保存到session"><span class="nav-number">2.3.</span> <span class="nav-text">保存到session</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户访问"><span class="nav-number">2.4.</span> <span class="nav-text">用户访问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Remember-me"><span class="nav-number">2.5.</span> <span class="nav-text">Remember me</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#结论"><span class="nav-number">3.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#jwt"><span class="nav-number">4.</span> <span class="nav-text">jwt</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#题外话"><span class="nav-number">5.</span> <span class="nav-text">题外话</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Keihi Gi</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.2.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.2.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.2.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.2.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.2.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.2.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

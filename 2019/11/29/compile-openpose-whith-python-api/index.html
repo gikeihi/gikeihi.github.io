@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.2.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.2.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="本篇主要讲述，如何在windows 10 x64上，从源代码编译openpose，并支持python api。">
+<meta name="keywords" content="openpose,python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编译openpose，支持python api">
+<meta property="og:url" content="http://yoursite.com/2019/11/29/compile-openpose-whith-python-api/index.html">
+<meta property="og:site_name" content="小屋">
+<meta property="og:description" content="本篇主要讲述，如何在windows 10 x64上，从源代码编译openpose，并支持python api。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2025-11-14T03:26:00.432Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="编译openpose，支持python api">
+<meta name="twitter:description" content="本篇主要讲述，如何在windows 10 x64上，从源代码编译openpose，并支持python api。">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/11/29/compile-openpose-whith-python-api/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>编译openpose，支持python api | 小屋</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小屋</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">小憩之处</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/29/compile-openpose-whith-python-api/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Keihi Gi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小屋">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">编译openpose，支持python api
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-29 09:50:14" itemprop="dateCreated datePublished" datetime="2019-11-29T09:50:14+08:00">2019-11-29</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2025-11-14 11:26:00" itemprop="dateModified" datetime="2025-11-14T11:26:00+08:00">2025-11-14</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/openpose/" itemprop="url" rel="index"><span itemprop="name">openpose</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本篇主要讲述，如何在windows 10 x64上，从源代码编译openpose，并支持python api。<br><a id="more"></a></p>
+<h1 id="安装必要的软件"><a href="#安装必要的软件" class="headerlink" title="安装必要的软件"></a>安装必要的软件</h1><h2 id="windows-10"><a href="#windows-10" class="headerlink" title="windows 10"></a>windows 10</h2><h2 id="git"><a href="#git" class="headerlink" title="git"></a>git</h2><h2 id="安装python，并把python放到系统的path里。"><a href="#安装python，并把python放到系统的path里。" class="headerlink" title="安装python，并把python放到系统的path里。"></a>安装python，并把python放到系统的path里。</h2><p>现阶段（openpose 1.5）还未支持python3.8，所以下载3.7的最新版本<br><a href="https://www.python.org/ftp/python/3.7.5/python-3.7.5-amd64.exe" target="_blank" rel="noopener">https://www.python.org/ftp/python/3.7.5/python-3.7.5-amd64.exe</a></p>
+<ul>
+<li>安装所需的模块  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install opencv-python</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="安装cuda"><a href="#安装cuda" class="headerlink" title="安装cuda"></a>安装cuda</h2><h3 id="确认本机显卡驱动版本"><a href="#确认本机显卡驱动版本" class="headerlink" title="确认本机显卡驱动版本"></a>确认本机显卡驱动版本</h3><ul>
+<li>从控制面板打开NVIDIA面板  </li>
+<li>点击【帮助】菜单的【系统信息】便可以查看显卡驱动版本，我的版本是<code>422.02</code>  </li>
+</ul>
+<h3 id="打开以下网站，确认适合的CUDA版本"><a href="#打开以下网站，确认适合的CUDA版本" class="headerlink" title="打开以下网站，确认适合的CUDA版本"></a>打开以下网站，确认适合的CUDA版本</h3><p><a href="https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html" target="_blank" rel="noopener">https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html</a></p>
+<h3 id="本次以9-2版本为例安装"><a href="#本次以9-2版本为例安装" class="headerlink" title="本次以9.2版本为例安装"></a>本次以9.2版本为例安装</h3><p><a href="https://developer.nvidia.com/cuda-92-download-archive?target_os=Windows&amp;target_arch=x86_64&amp;target_version=10&amp;target_type=exelocal" target="_blank" rel="noopener">https://developer.nvidia.com/cuda-92-download-archive?target_os=Windows&amp;target_arch=x86_64&amp;target_version=10&amp;target_type=exelocal</a></p>
+<h2 id="安装cudnn"><a href="#安装cudnn" class="headerlink" title="安装cudnn"></a>安装cudnn</h2><ul>
+<li>下载cuda所对应版本的cudnn，这个需要注册才能下载  </li>
+<li>安装非常简单，只要把文件放置到cuda的相应目下即可  </li>
+<li>为了让cudann支持最新的visual studio 2017版本，修改以下cudann的头文件  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.2\include\crt\host_config.h</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>131行把最后一个数字增大，1920是visual studio 2019版的初始版本，改为1920应该没问题<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">if</span> _MSC_VER <span class="meta-string">&lt; 1600 || _MSC_VER &gt; 1920</span></span></span><br></pre></td></tr></table></figure></p>
+<h2 id="安装visual-studio-community-2017"><a href="#安装visual-studio-community-2017" class="headerlink" title="安装visual studio community 2017"></a>安装visual studio community 2017</h2><ul>
+<li>安装c++编译器即可  <h2 id="安装cmake-这里以版本3-6-0为例。"><a href="#安装cmake-这里以版本3-6-0为例。" class="headerlink" title="安装cmake,这里以版本3.6.0为例。"></a>安装cmake,这里以版本3.6.0为例。</h2><a href="https://github.com/Kitware/CMake/releases/download/v3.16.0/cmake-3.16.0-win64-x64.msi" target="_blank" rel="noopener">https://github.com/Kitware/CMake/releases/download/v3.16.0/cmake-3.16.0-win64-x64.msi</a><h1 id="编译openpose"><a href="#编译openpose" class="headerlink" title="编译openpose"></a>编译openpose</h1><h2 id="克隆最新的openpose源代码，由于openpose内部参照了其他的仓库资源，所以这边用–recursive来克隆"><a href="#克隆最新的openpose源代码，由于openpose内部参照了其他的仓库资源，所以这边用–recursive来克隆" class="headerlink" title="克隆最新的openpose源代码，由于openpose内部参照了其他的仓库资源，所以这边用–recursive来克隆"></a>克隆最新的openpose源代码，由于openpose内部参照了其他的仓库资源，所以这边用–recursive来克隆</h2><figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone --recursive https://github.com/CMU-Perceptual-Computing-Lab/openpose.git</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="打开cmake配置编译项"><a href="#打开cmake配置编译项" class="headerlink" title="打开cmake配置编译项"></a>打开cmake配置编译项</h2><ul>
+<li><code>[where is the source code]</code>指定openpose的目录  </li>
+<li><code>[where to build the binaries]</code>指定编译目录，一般指定为openpose目录下的<code>build</code>目录  </li>
+<li>点击<code>Configure</code>按钮，便会下载所需文件，以及配置编译参数  </li>
+<li>选项中选择<code>BUILD_PYTHON</code>，然后点击<code>Generate</code>按钮，生成visual studio 2017的工程  </li>
+<li>点击<code>Open Project</code>按钮，打开visual studio 2017，并打开openpose工程  <h2 id="build"><a href="#build" class="headerlink" title="build"></a>build</h2></li>
+<li>在visual studio 2017中，选择编译为release，右键点击solution OpenPose，选择build solution。  </li>
+</ul>
+<h1 id="用python开发程序时，用到的文件"><a href="#用python开发程序时，用到的文件" class="headerlink" title="用python开发程序时，用到的文件"></a>用python开发程序时，用到的文件</h1><h2 id="openpose所需dll文件"><a href="#openpose所需dll文件" class="headerlink" title="openpose所需dll文件"></a>openpose所需dll文件</h2><ul>
+<li>openpose\build\bin下的所有文件  </li>
+<li>openpose\build\x64\Release下的openpose.dll文件  <h2 id="python的包文件"><a href="#python的包文件" class="headerlink" title="python的包文件"></a>python的包文件</h2></li>
+<li>openpose\build\python\openpose\Release下的pyopenpose.cp37-win_amd64.pyd文件  <h2 id="openpose的模块文件"><a href="#openpose的模块文件" class="headerlink" title="openpose的模块文件"></a>openpose的模块文件</h2></li>
+<li>openpose\models  </li>
+</ul>
+<h1 id="python示例"><a href="#python示例" class="headerlink" title="python示例"></a>python示例</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># From Python</span></span><br><span class="line"><span class="comment"># It requires OpenCV installed for Python</span></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">from</span> cv2 <span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> argparse</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    dir_path = os.path.dirname(os.path.realpath(__file__))</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        sys.path.append(dir_path + <span class="string">'/pyd'</span>) <span class="comment"># 这个地方放的是openpose的模块文件</span></span><br><span class="line">        os.environ[<span class="string">'PATH'</span>] = os.environ[<span class="string">'PATH'</span>] + <span class="string">';'</span> + dir_path + <span class="string">'/lib;'</span> <span class="comment">#这个地方放的是openpose所需dll文件</span></span><br><span class="line">        <span class="keyword">import</span> pyopenpose <span class="keyword">as</span> op</span><br><span class="line">    <span class="keyword">except</span> ImportError <span class="keyword">as</span> e:</span><br><span class="line">        print(<span class="string">'Error: OpenPose library could not be found. Did you enable `BUILD_PYTHON` in CMake and have this Python script in the right folder?'</span>)</span><br><span class="line">        <span class="keyword">raise</span> e</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Flags</span></span><br><span class="line">    parser = argparse.ArgumentParser()</span><br><span class="line">    parser.add_argument(<span class="string">"--image_path"</span>, default=<span class="string">"./COCO_val2014_000000000241.jpg"</span>,</span><br><span class="line">                        help=<span class="string">"Process an image. Read all standard formats (jpg, png, bmp, etc.)."</span>)</span><br><span class="line">    args = parser.parse_known_args()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Custom Params (refer to include/openpose/flags.hpp for more parameters)</span></span><br><span class="line">    params = dict()</span><br><span class="line">    params[<span class="string">"model_folder"</span>] = dir_path + <span class="string">"/models"</span> <span class="comment"># 这个地方放的是openpose的模块文件</span></span><br><span class="line">    <span class="comment">#params["face"] = True</span></span><br><span class="line">    <span class="comment">#params["hand"] = True</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Add others in path?</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, len(args[<span class="number">1</span>])):</span><br><span class="line">        curr_item = args[<span class="number">1</span>][i]</span><br><span class="line">        <span class="keyword">if</span> i != len(args[<span class="number">1</span>])<span class="number">-1</span>:</span><br><span class="line">            next_item = args[<span class="number">1</span>][i+<span class="number">1</span>]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            next_item = <span class="string">"1"</span></span><br><span class="line">        <span class="keyword">if</span> <span class="string">"--"</span> <span class="keyword">in</span> curr_item <span class="keyword">and</span> <span class="string">"--"</span> <span class="keyword">in</span> next_item:</span><br><span class="line">            key = curr_item.replace(<span class="string">'-'</span>, <span class="string">''</span>)</span><br><span class="line">            <span class="keyword">if</span> key <span class="keyword">not</span> <span class="keyword">in</span> params:</span><br><span class="line">                params[key] = <span class="string">"1"</span></span><br><span class="line">        <span class="keyword">elif</span> <span class="string">"--"</span> <span class="keyword">in</span> curr_item <span class="keyword">and</span> <span class="string">"--"</span> <span class="keyword">not</span> <span class="keyword">in</span> next_item:</span><br><span class="line">            key = curr_item.replace(<span class="string">'-'</span>, <span class="string">''</span>)</span><br><span class="line">            <span class="keyword">if</span> key <span class="keyword">not</span> <span class="keyword">in</span> params:</span><br><span class="line">                params[key] = next_item</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Construct it from system arguments</span></span><br><span class="line">    <span class="comment"># op.init_argv(args[1])</span></span><br><span class="line">    <span class="comment"># oppython = op.OpenposePython()</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Starting OpenPose</span></span><br><span class="line">    opWrapper = op.WrapperPython()</span><br><span class="line">    opWrapper.configure(params)</span><br><span class="line">    opWrapper.start()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Process Image</span></span><br><span class="line">    datum = op.Datum()</span><br><span class="line">    imageToProcess = cv2.imread(args[<span class="number">0</span>].image_path)</span><br><span class="line">    datum.cvInputData = imageToProcess</span><br><span class="line">    opWrapper.emplaceAndPop([datum])</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Display Image</span></span><br><span class="line">    print(<span class="string">"Body keypoints: \n"</span> + str(datum.poseKeypoints))</span><br><span class="line">    <span class="comment">#print("Face keypoints: \n" + str(datum.faceKeypoints))</span></span><br><span class="line">    <span class="comment">#print("Left hand keypoints: \n" + str(datum.handKeypoints[0]))</span></span><br><span class="line">    <span class="comment">#print("Right hand keypoints: \n" + str(datum.handKeypoints[1]))</span></span><br><span class="line">    cv2.imshow(<span class="string">"OpenPose 1.5.1 - Tutorial Python API"</span>, datum.cvOutputData)</span><br><span class="line">    cv2.waitKey(<span class="number">0</span>)</span><br><span class="line"><span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">    print(e)</span><br><span class="line">    sys.exit(<span class="number">-1</span>)</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/openpose/" rel="tag"># openpose</a>
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/27/django/" rel="next" title="Django的一些基本使用">
+                <i class="fa fa-chevron-left"></i> Django的一些基本使用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/02/21/single-promise/" rel="prev" title="single promise">
+                single promise <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Keihi Gi</p>
+              <p class="site-description motion-element" itemprop="description">没事进来做做，喝杯茶，聊聊天。</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">44</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">21</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">63</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#安装必要的软件"><span class="nav-number">1.</span> <span class="nav-text">安装必要的软件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#windows-10"><span class="nav-number">1.1.</span> <span class="nav-text">windows 10</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#git"><span class="nav-number">1.2.</span> <span class="nav-text">git</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装python，并把python放到系统的path里。"><span class="nav-number">1.3.</span> <span class="nav-text">安装python，并把python放到系统的path里。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装cuda"><span class="nav-number">1.4.</span> <span class="nav-text">安装cuda</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#确认本机显卡驱动版本"><span class="nav-number">1.4.1.</span> <span class="nav-text">确认本机显卡驱动版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#打开以下网站，确认适合的CUDA版本"><span class="nav-number">1.4.2.</span> <span class="nav-text">打开以下网站，确认适合的CUDA版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#本次以9-2版本为例安装"><span class="nav-number">1.4.3.</span> <span class="nav-text">本次以9.2版本为例安装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装cudnn"><span class="nav-number">1.5.</span> <span class="nav-text">安装cudnn</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装visual-studio-community-2017"><span class="nav-number">1.6.</span> <span class="nav-text">安装visual studio community 2017</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装cmake-这里以版本3-6-0为例。"><span class="nav-number">1.7.</span> <span class="nav-text">安装cmake,这里以版本3.6.0为例。</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编译openpose"><span class="nav-number">2.</span> <span class="nav-text">编译openpose</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#克隆最新的openpose源代码，由于openpose内部参照了其他的仓库资源，所以这边用–recursive来克隆"><span class="nav-number">2.1.</span> <span class="nav-text">克隆最新的openpose源代码，由于openpose内部参照了其他的仓库资源，所以这边用–recursive来克隆</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#打开cmake配置编译项"><span class="nav-number">2.2.</span> <span class="nav-text">打开cmake配置编译项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#build"><span class="nav-number">2.3.</span> <span class="nav-text">build</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用python开发程序时，用到的文件"><span class="nav-number">3.</span> <span class="nav-text">用python开发程序时，用到的文件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#openpose所需dll文件"><span class="nav-number">3.1.</span> <span class="nav-text">openpose所需dll文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#python的包文件"><span class="nav-number">3.2.</span> <span class="nav-text">python的包文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#openpose的模块文件"><span class="nav-number">3.3.</span> <span class="nav-text">openpose的模块文件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#python示例"><span class="nav-number">4.</span> <span class="nav-text">python示例</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Keihi Gi</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.2.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.2.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.2.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.2.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.2.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.2.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
